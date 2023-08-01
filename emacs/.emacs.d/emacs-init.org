@@ -518,11 +518,11 @@ Use xterm-color for eshell
 (use-package numpydoc
   :commands numpydoc-generate)
 
-(use-package py-isort
-    :hook (python-mode . py-isort-enable-on-save)
+(use-package python-isort
+    :hook (python-mode . python-isort-on-save-mode)
     :config
-    (setq py-isort-options '("--line-length=88" "-m=3" "-tc" "-fgw=0" "-ca"))
-    (add-hook 'before-save-hook 'py-isort-before-save))
+    (setq python-isort-arguments '("--line-length=88" "-m=3" "-tc" "-fgw=0"
+                                   "-ca" "--stdout" "--atomic" "-")))
 #+end_src
 
 ** Github-Flavored Markdown
