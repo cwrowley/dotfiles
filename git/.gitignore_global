@@ -1,0 +1,23 @@
+*~
+.DS_Store
+auto/
+TAGS
+
+# Python generated files
+*.pyc
+.ipynb_checkpoints
+.coverage
+coverage.json
+
+# LaTeX generated files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.toc
+*.spl
+
+.vscode/

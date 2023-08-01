@@ -1,0 +1,41 @@
+[user]
+	name = Clancy Rowley
+	email = cwrowley@princeton.edu
+
+[diff]
+    tool = opendiff
+
+[merge]
+    tool = opendiff
+
+[color]
+	ui = auto
+[push]
+	default = simple
+[alias]
+	st = status
+	unstage = reset HEAD --
+	last = log -1 HEAD
+	glog = log --oneline --graph
+	rso = remote show origin
+	co = checkout
+[filter "media"]
+	clean = git-media-clean %f
+	smudge = git-media-smudge %f
+[core]
+	excludesfile = /Users/cwrowley/.gitignore_global
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[filter "hawser"]
+	clean = git hawser clean %f
+	smudge = git hawser smudge %f
+	required = true
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process

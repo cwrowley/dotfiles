@@ -1,0 +1,89 @@
+# Show remote Terminal sessions with a different style.
+# TERM_PROGRAM doesn't get set if we are logged in remotely,
+# but then the originating Terminal could have done this (hopefully).
+# if [ "$TERM_PROGRAM" = "Apple_Terminal" ]; then
+  # function ssh {
+    # SetTerminalStyle ssh
+    # /usr/bin/ssh "$@"
+    # SetTerminalStyle novel
+  # }
+# fi
+
+export PAGER="less -R"
+export EDITOR=emacsclient
+export ALTERNATE_EDITOR=vi
+
+export PYTHONSTARTUP=$HOME/.pythonstartup.py
+
+# workaround for python -c "import numpy; import torch"
+export KMP_DUPLICATE_LIB_OK=TRUE
+
+
+if [ -f /usr/local/etc/bash_completion ]; then
+    . /usr/local/etc/bash_completion
+elif [ -f /opt/homebrew/etc/bash_completion ]; then
+    . /opt/homebrew/etc/bash_completion
+fi
+
+## set prompt
+GIT_PS1_SHOWDIRTYSTATE=true
+
+# PS1='\[\e[1;32m\]\h:\[\e[0;34m\] \W \!$\[\e[m\] '
+# PS1='\[\e[1m\]\h$\[\e[0m\] '
+# PS1='\[\e[1m\]\h \w\[\e[1;32m\]$(__git_ps1)\[\e[1;39m\]$\[\e[0m\] '
+# PS1="$BOLD\h $BC\W$BG\$(__git_ps1)$RESET$ "
+PS1='\[\e[1;36m\]\h \[\e[1;35m\]\W \[\e[33m\]$(if [ $? == "0" ]; then echo ":)"; else echo ":("; fi)\[\e[1;32m\]$(__git_ps1) \[\e[31m\]$ \[\e[m\]'
+
+#eval `dircolors -b $HOME/.ls_colors`
+
+set -o noclobber
+
+# make bash check its window size afer a process completes
+shopt -s checkwinsize
+
+# up/down arrow keys do history lookup
+bind '"\e[A":history-search-backward'
+bind '"\e[B":history-search-forward'
+
+if [ -f ~/.aliases ]; then
+    source ~/.aliases
+fi
+
+# functions to sync files with math server
+work_dir="Work/"
+ref_dir="Reference/"
+rsync_local="$HOME/"
+rsync_remote="math.princeton.edu:"
+do_rsync () {
+    rsync -rlptvuzhe ssh --exclude='.DS_Store' "$@"
+}
+rsync_pulldir () {
+    syncdir=$1
+    shift
+    echo "Pulling directory $syncdir from $rsync_remote"
+    do_rsync "$@" $rsync_remote$syncdir $rsync_local$syncdir
+    echo -e "\033[1;32mFinished pulling $syncdir $@ $(date)\033[0m"
+}
+rsync_pushdir () {
+    syncdir=$1
+    shift
+    echo "Pushing directory $syncdir to $rsync_remote"
+    do_rsync "$@" $rsync_local$syncdir $rsync_remote$syncdir
+    echo -e "\033[1;32mFinished pushing $syncdir $@ $(date)\033[0m"
+}
+pushwork () { rsync_pushdir $work_dir "$@"; }
+pullwork () { rsync_pulldir $work_dir "$@"; }
+pushref  () { rsync_pushdir $ref_dir "$@"; }
+pullref  () { rsync_pulldir $ref_dir "$@"; }
+pushmath () { pushwork "$@"; pushref "$@"; }
+pullmath () { pullwork "$@"; pullref "$@"; }
+
+# sync course files with H drive
+push433 () {
+    echo "Pushing directory mae433 to arizona"
+    do_rsync "$@" $HOME/mae433/ arizona.princeton.edu:mae433/
+}
+pull433 () {
+    echo "Pulling directory mae433 from arizona"
+    do_rsync "$@" arizona.princeton.edu:mae433/ $HOME/mae433/
+}

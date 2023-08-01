@@ -1,0 +1,36 @@
+alias t='less'
+#alias ls='ls -CF --color=auto'
+alias ls='ls -CFG'
+alias lo='logout'
+alias h='history 23'
+alias rm='rm -i'
+alias rot13='tr "[a-m][n-z][A-M][N-Z]" "[n-z][a-m][N-Z][A-M]"'
+alias ssh='ssh -Y '
+alias pylab='ipython qtconsole --pylab'
+alias adroit='ssh -l cwrowley adroit.princeton.edu'
+ldap() {
+    ldapsearch -LLL -x -h ldap.princeton.edu -b "o=Princeton University, c=US" "uid=$1" $2 $3 $4
+}
+# alias e='emacsclient -t'
+alias ec='emacsclient'
+# alias emacs='emacsclient -n'
+# alias emacs='~/bin/emacsclient.sh'
+alias texclean='for f in *.tex; do \rm ${f%.*}.{aux,log,fdb_latexmk,fls,synctex.gz} 2> /dev/null; done'
+
+ffplay() { command ffplay -hide_banner "$@"; };
+ffprobe() { command ffprobe -hide_banner "$@"; };
+ffmpeg() { command ffmpeg -hide_banner "$@"; };
+
+# rsync
+# work_dir="Work/"
+# ref_dir="Reference/"
+# local="$HOME/"
+# remote="math.princeton.edu:"
+# options="-rlptvuzhe ssh --exclude='.DS_Store'"
+# alias pushwork="rsync $options $local$work_dir  $remote$work_dir"
+# alias pullwork="rsync $options $remote$work_dir $local$work_dir"
+# alias syncwork="pushwork; pullwork"
+# alias pushref="rsync  $options $local$ref_dir   $remote$ref_dir"
+# alias pullref="rsync  $options $remote$ref_dir  $local$ref_dir"
+# alias syncref="pushref; pullref"
+# unset local remote options work_dir ref_dir
