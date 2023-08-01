@@ -445,11 +445,10 @@ Use xterm-color for eshell
 ** Conda configuration
 #+begin_src emacs-lisp
 (use-package conda
-  :disabled t
   :hook (eshell-mode . conda-env-initialize-eshell)
-  :init
-  (conda-env-initialize-interactive-shells)
-  (conda-env-autoactivate-mode t)
+  ;; :init
+  ;; (conda-env-initialize-interactive-shells)
+  ;; (conda-env-autoactivate-mode t)
   )
 #+end_src
 
