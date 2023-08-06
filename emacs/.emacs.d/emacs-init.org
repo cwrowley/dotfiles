@@ -733,6 +733,11 @@ Language server protocol (LSP) client
   (which-key-mode))
 #+end_src
 
+** Vterm
+#+begin_src emacs-lisp
+(use-package vterm)
+#+end_src
+
 * Disabled packages
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle no
