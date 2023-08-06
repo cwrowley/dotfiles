@@ -815,15 +815,8 @@ Language server protocol (LSP) client
 #+end_src
 
 * Set theme
-
 #+begin_src emacs-lisp
-;; (use-package atom-one-dark-theme
-  ;; :config
-  ;; (load-theme 'atom-one-dark t))
-
-;; (use-package ef-themes
-;;   :config
-;;   (load-theme 'ef-autumn t))
+(use-package ef-themes)
 
 (use-package modus-themes
   :ensure t
@@ -836,37 +829,20 @@ Language server protocol (LSP) client
   (load-theme 'modus-vivendi :no-confirm)
   (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 
-;; (use-package zenburn-theme
-;;   :init
-;;   ;; (set-face-attribute 'default nil :font "Menlo-12" :height 140)
-;;   (setq zenburn-use-variable-pitch t)
-;;   (setq zenburn-scale-org-headlines t)
-;;   :config
-;;   (load-theme 'zenburn t))
+(use-package zenburn-theme
+  :init
+  (setq zenburn-use-variable-pitch t)
+  (setq zenburn-scale-org-headlines t))
 
-;;;; Set color-theme
-;; (if (fboundp 'load-theme)
-;;     (progn
-;;       ;; (load-theme 'alect-black t))
-;;       ;; (load-theme 'tango-2 t))
-;;       ;; (load-theme 'tangotango t))
-;;       ;; (load-theme 'monokai t))
-;;       ;; (load-theme 'sanityinc-tomorrow-night t))
-;;       (load-theme 'zenburn t))
-;;       ;; (load-theme 'solarized-dark t))
-;;       ;; (load-theme 'gruvbox t))
-;;       ;; (load-theme 'doom-one t))
-;;   )
+(load-theme 'modus-vivendi-tinted t)
 #+end_src
-** Fonts
 
+** Fonts
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil :font "Hack-14")
 (set-face-attribute 'fixed-pitch nil :font "Hack-14")
 (set-face-attribute 'variable-pitch nil :font "Fira Sans-16")
-
 #+end_src
-
 
 ** Calc
 #+begin_src emacs-lisp
