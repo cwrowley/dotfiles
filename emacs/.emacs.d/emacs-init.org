@@ -582,6 +582,17 @@ Use xterm-color for eshell
                                    "-ca" "--stdout" "--atomic" "-")))
 #+end_src
 
+** Treesitter parsers
+In order to use the treesitter versions of these language modes, need to install
+the corresponding grammars with =treesit-install-language-grammar=.
+#+begin_src emacs-lisp
+(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+(add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+(add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+(add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
+(add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
+#+end_src
+
 ** Github-Flavored Markdown
 #+begin_src emacs-lisp
 (use-package gfm-mode
