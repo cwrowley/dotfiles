@@ -455,6 +455,7 @@ Use dabbrev with Corfu
       text-mode
     ))
     (evil-set-initial-state mode 'normal))
+  (evil-set-initial-state 'grep-mode 'emacs)
   (define-key evil-normal-state-map "\M-." nil)
   (evil-mode 1))
 
@@ -736,6 +737,12 @@ Language server protocol (LSP) client
 ** Vterm
 #+begin_src emacs-lisp
 (use-package vterm)
+#+end_src
+
+** Wgrep
+Make grep buffers editable
+#+begin_src emacs-lisp
+(require 'wgrep)
 #+end_src
 
 * Disabled packages
