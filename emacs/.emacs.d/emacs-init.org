@@ -64,15 +64,9 @@
 (setq delete-old-versions t)
 (setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
 
+
+;; Remember recent files
 (recentf-mode 1)
-#+end_src
-
-** Enable svg images
-There seems to be a bug in Emacs 28, with Mac OS, in which svg images are not
-supported.  This fixes the problem.
-
-#+begin_src emacs-lisp
-(add-to-list 'image-types 'svg)
 #+end_src
 
 * Custom info files
@@ -99,10 +93,7 @@ My custom info files are specified in INFOPATH.  Append the default ones here.
   (interactive)
   (goto-char 1)
   (let* ((inc-name (replace-in-string (buffer-name (current-buffer)) "\\." "_" ) )
-	 (ftag (concat ""
-		       (upcase inc-name )
-		       "" ))
-	 )
+	 (ftag (concat "" (upcase inc-name ) "" )))
     (insert (concat "#ifndef " ftag))
     (newline)
     (insert (concat "#define " ftag))
@@ -176,8 +167,8 @@ DEFINITIONS is a sequence of string and command pairs."
 ;; (require 'use-package-ensure)
 ;; (setq use-package-always-ensure t)
 ;; (setq use-package-verbose t)
-
 #+end_src
+
 *** Delight
 Simplify mode line, ignoring some minor modes
 #+begin_src emacs-lisp
@@ -185,9 +176,43 @@ Simplify mode line, ignoring some minor modes
 (delight '((eldoc-mode nil "eldoc")))
 (delight '((buffer-face-mode nil "face-remap")))
 (delight '((evil-org-mode nil "evil-org")))
+#+end_src
 
+** Dired
+Configure =dired= do use simplified view
+#+begin_src emacs-lisp
+(add-hook 'dired-mode-hook 'dired-hide-details-mode)
+;; (setq dired-hide-details-hide-symlink-targets nil)
+
+;; Highlight current line
+(add-hook 'dired-mode-hook 'hl-line-mode)
+(add-hook 'bookmark-bmenu-mode-hook 'hl-line-mode)
+
+;; Useful when using two dired windows
+(setq dired-dwim-target t)
+#+end_src
+
+Guess what shell command to apply to files
+#+begin_src emacs-lisp
+(use-package dired-x
+  :hook (dired-mode . (lambda() (dired-omit-mode 1)))
+  :config
+  (setq dired-guess-shell-alist-user
+	'((".*" "open"))))
 #+end_src
 ** Completion
+*** Isearch
+Display counter showing the total number of matches
+#+begin_src emacs-lisp
+(setq isearch-lazy-count t)
+(setq lazy-count-prefix-format "(%s/%s) ")
+#+end_src
+
+Make regular Isearch interpret space as a wildcard
+#+begin_src emacs-lisp
+(setq search-whitespace-regexp ".*?")
+#+end_src
+
 *** Marginalia
 #+begin_src emacs-lisp
 (use-package marginalia
@@ -195,6 +220,7 @@ Simplify mode line, ignoring some minor modes
   :config
   (marginalia-mode))
 #+end_src
+
 *** Vertico
 #+begin_src emacs-lisp
 ;; Enable vertico
@@ -234,6 +260,7 @@ Simplify mode line, ignoring some minor modes
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t))
 #+end_src
+
 *** Orderless
 #+begin_src emacs-lisp
 (use-package orderless
@@ -243,6 +270,7 @@ Simplify mode line, ignoring some minor modes
         completion-category-defaults nil
         completion-category-overrides '((file (styles basic partial-completion)))))
 #+end_src
+
 *** Consult
 #+begin_src emacs-lisp
 ;; Example configuration for Consult
@@ -344,6 +372,7 @@ Simplify mode line, ignoring some minor modes
   (setq consult-narrow-key "<") ;; "C-+"
 )
 #+end_src
+
 *** Corfu
 Popup window for code completion
 #+begin_src emacs-lisp
@@ -351,6 +380,7 @@ Popup window for code completion
   :init
   (global-corfu-mode))
 #+end_src
+
 *** Dabbrev
 Use dabbrev with Corfu
 #+begin_src emacs-lisp
@@ -396,6 +426,7 @@ Use dabbrev with Corfu
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
+
 ** Global keybindings
 #+begin_src emacs-lisp
 (use-package bind-key
@@ -410,15 +441,26 @@ Use dabbrev with Corfu
 ** Evil keybindings
 #+begin_src emacs-lisp
 (use-package evil
-  :init
   :config
-  (evil-set-initial-state 'dired-mode 'emacs)
-  (evil-set-initial-state 'Info-mode 'emacs)
-  ;; unbind M-. so it works for xref
+  ;; by default, use Emacs bindings
+  (setq evil-default-state 'emacs)
+  ;; use vi bindings (Normal mode) only for the following major modes
+  (dolist (mode
+    '(
+      emacs-lisp-mode
+      org-mode
+      python-mode
+      python-ts-mode
+      sh-mode
+      text-mode
+    ))
+    (evil-set-initial-state mode 'normal))
   (define-key evil-normal-state-map "\M-." nil)
   (evil-mode 1))
 
-  ;; (setq evil-search-module 'evil-search))
+(use-package evil-surround
+  :config
+  (global-evil-surround-mode 1))
 
 (use-package evil-org
   :after org
@@ -426,6 +468,21 @@ Use dabbrev with Corfu
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
+#+end_src
+
+** Pulsar
+The variable =pulsar-pulse-functions= lets you add more functions that should
+cause a pulse after they're invoked.
+#+begin_src emacs-lisp
+(use-package pulsar
+  :config
+  (add-hook 'next-error-hook #'pulsar-pulse-line)
+  (add-hook 'consult-after-jump-hook #'pulsar-recenter-top)
+  (add-hook 'consult-after-jump-hook #'pulsar-reveal-entry)
+  (add-hook 'imenu-after-jump-hook #'pulsar-recenter-top)
+  (add-hook 'imenu-after-jump-hook #'pulsar-reveal-entry)
+  :init
+  (pulsar-global-mode t))
 #+end_src
 
 ** Ripgrep
@@ -677,7 +734,7 @@ Language server protocol (LSP) client
 #+end_src
 
 ** Flycheck
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (use-package flycheck
   :init (global-flycheck-mode)
   :config
