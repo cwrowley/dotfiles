@@ -67,6 +67,9 @@
 
 ;; Remember recent files
 (recentf-mode 1)
+
+;; Enable narrowing
+(put 'narrow-to-region 'disabled nil)
 #+end_src
 
 * Custom info files
@@ -846,7 +849,7 @@ Make grep buffers editable
   (setq zenburn-use-variable-pitch t)
   (setq zenburn-scale-org-headlines t))
 
-(load-theme 'modus-vivendi-tinted t)
+(load-theme 'modus-vivendi t)
 #+end_src
 
 ** Fonts
