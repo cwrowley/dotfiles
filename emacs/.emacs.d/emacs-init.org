@@ -590,6 +590,19 @@ minibuffer, or for the symbol at point
   :hook ((c-mode-common . google-set-c-style)
 	 (c-mode-common . google-make-newline-indent)))
 #+end_src
+
+*** Flymake
+#+begin_src emacs-lisp
+(use-package flymake
+  :config
+  (cr-keybind flymake-mode-map
+    "C-x `"   #'flymake-goto-next-error
+    "M-g n"   #'flymake-goto-next-error
+    "M-g M-n" #'flymake-goto-next-error
+    "M-g p"   #'flymake-goto-prev-error
+    "M-g M-p" #'flymake-goto-prev-error))
+#+end_src
+
 *** Makefiles
 #+begin_src emacs-lisp
 (use-package make-mode
