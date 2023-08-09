@@ -605,15 +605,6 @@ minibuffer, or for the symbol at point
 
 *** Python
 #+begin_src emacs-lisp
-(use-package elpy
-  :disabled t
-  :defer t
-  :init
-  (advice-add 'python-mode :before 'elpy-enable)
-  (setenv "WORKON_HOME" "~/miniconda3/")
-  :config
-  (bind-key "M-." 'elpy-goto-definition))
-
 (use-package python
   :bind (:map python-mode-map
 	      ("<f11>" . numpydoc-generate)))
@@ -622,7 +613,8 @@ minibuffer, or for the symbol at point
   :commands numpydoc-generate)
 
 (use-package python-isort
-    :hook (python-mode . python-isort-on-save-mode)
+    :hook ((python-mode . python-isort-on-save-mode)
+           (python-ts-mode . python-isort-on-save-mode))
     :config
     (setq python-isort-arguments '("--line-length=88" "-m=3" "-tc" "-fgw=0"
                                    "-ca" "--stdout" "--atomic" "-")))
