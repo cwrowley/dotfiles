@@ -1,8 +1,10 @@
 #+TITLE: Emacs config file
-#+DATE: 26 July 2023
+#+DATE: 8 Aug 2023
 #+AUTHOR: Clancy Rowley
 #+PROPERTY: header-args:emacs-lisp :tangle init.el
 
+* General settings
+** Header
 #+begin_src emacs-lisp
 ;;; init.el -- Clancy's Emacs init file
 
@@ -12,19 +14,8 @@
 ;;; Code:
 #+end_src
 
-* Set up package manager
+** Disable startup screen, toolbar, etc
 #+begin_src emacs-lisp
-;;;; ELPA packages
-(require 'package)
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/") t)
-#+end_src
-
-* Overall settings
-#+begin_src emacs-lisp
-;;;; Automatically change buffers if they are changed on disk
-(global-auto-revert-mode t)
-
 ;;;; No startup screen
 (setq inhibit-startup-screen t)
 
@@ -33,54 +24,101 @@
 
 ;;;; Disable the tool bar
 (tool-bar-mode -1)
+#+end_src
 
-;;;; Disable custom-file by making it disposable
-(setq custom-file (make-temp-file "emacs-custom-"))
-
-;;;; Relative line numbers
-(setq display-line-numbers-type 'relative)
-;; (global-display-line-numbers-mode)
-
-;;;; Default major mode
-(setq-default major-mode 'text-mode)
-
-;;;; Turn on auto-fill for various modes
-(add-hook 'text-mode-hook 'turn-on-auto-fill)
-
-;;;; Set path
-(add-to-list 'exec-path "/Library/TeX/texbin")
-(add-to-list 'exec-path "/usr/local/bin")
-(setenv "PATH" (concat "/Library/TeX/texbin:/usr/local/bin:" (getenv "PATH")))
-
-;;;; Set default fill column and window size
-(setq-default fill-column 80)
-(setq default-frame-alist
-       '((top . 20) (left . 20)
-         (width . 100) (height . 60)))
-
-;; Save backup files to specified directory
+** Save backup files to specified directory
+#+begin_src emacs-lisp
 (setq make-backup-files t)
 (setq version-control t)
 (setq delete-old-versions t)
 (setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
-
-
-;; Remember recent files
-(recentf-mode 1)
-
-;; Enable narrowing
-(put 'narrow-to-region 'disabled nil)
 #+end_src
 
-* Custom info files
-My custom info files are specified in INFOPATH.  Append the default ones here.
+** Auto revert buffers
+#+begin_src emacs-lisp
+(global-auto-revert-mode t)
+#+end_src
 
+** Disable custom file
+Disable custom-file by making it disposable
+
+#+begin_src emacs-lisp
+(setq custom-file (make-temp-file "emacs-custom-"))
+#+end_src
+
+** Default major mode
+#+begin_src emacs-lisp
+(setq-default major-mode 'text-mode)
+;;;; Turn on auto-fill for various modes
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+#+end_src
+
+** Set path
+#+begin_src emacs-lisp
+(add-to-list 'exec-path "/Library/TeX/texbin")
+(add-to-list 'exec-path "/usr/local/bin")
+(setenv "PATH" (concat "/Library/TeX/texbin:/usr/local/bin:" (getenv "PATH")))
+#+end_src
+
+** Set default fill column and window size
+#+begin_src emacs-lisp
+(setq-default fill-column 80)
+(setq default-frame-alist
+       '((top . 20) (left . 20)
+         (width . 100) (height . 60)))
+#+end_src
+
+** Remember recent files
+#+begin_src emacs-lisp
+(recentf-mode 1)
+#+end_src
+
+** Enable narrowing
+#+begin_src emacs-lisp
+(put 'narrow-to-region 'disabled nil)
+#+end_src
+** Custom info files
+My custom info files are specified in INFOPATH.  Append the default ones here.
 #+begin_src emacs-lisp
 (setq Info-additional-directory-list Info-default-directory-list)
 #+end_src
 
-* Functions
+** Set up package manager
+*** Package
+#+begin_src emacs-lisp
+;;;; ELPA packages
+(require 'package)
+(add-to-list 'package-archives
+	     '("melpa" . "https://melpa.org/packages/") t)
+#+end_src
 
+*** Use-package
+#+begin_src emacs-lisp
+(message "Loading packages...")
+(eval-when-compile
+  (require 'use-package))
+(require 'bind-key)
+
+;; Download packages automatically if not installed
+;; NOTE: this can slow down loading of the init file, so disabled by default
+;; (require 'use-package-ensure)
+;; (setq use-package-always-ensure t)
+;; (setq use-package-verbose t)
+#+end_src
+
+*** Delight
+Simplify mode line, ignoring some minor modes.
+
+Load this before other packages, because delight provides a keyword for =use-package=
+#+begin_src emacs-lisp
+(require 'delight)
+(delight '((eldoc-mode nil "eldoc")))
+(delight '((buffer-face-mode nil "face-remap")))
+(delight '((evil-org-mode nil "evil-org")))
+#+end_src
+
+* Custom functions and macros
+** Include guards
 #+begin_src emacs-lisp
 (defun replace-in-string (string regexp newtext)
   "Replace regular expression REGEXP with NEWTEXT in the given STRING."
@@ -107,7 +145,10 @@ My custom info files are specified in INFOPATH.  Append the default ones here.
     (newline)
     )
   )
+#+end_src
 
+** Comments
+#+begin_src emacs-lisp
 (defun uncomment-line ()
   "Uncomment the current line."
   (interactive)
@@ -119,15 +160,15 @@ My custom info files are specified in INFOPATH.  Append the default ones here.
     (uncomment-region a b)))
 #+end_src
 
-* Macros
-
+** Date
 #+begin_src emacs-lisp
 (fset 'date
    [?\C-u ?\M-! ?d ?a ?t ?e return ?\C-n])
 #+end_src
 
-** Key bindings
-Convenient function for defining keybindings,
+* Keybindings
+** Macro
+Convenient macro for defining keybindings,
 from https://github.com/protesilaos/dotfiles/blob/master/emacs/.emacs.d/init.el
 
 #+begin_src emacs-lisp
@@ -157,123 +198,112 @@ DEFINITIONS is a sequence of string and command pairs."
 ;;   "C-x C-c" nil
 ;;   "C-x k" #'kill-buffer)
 #+end_src
+
+** Global keybindings
+#+begin_src emacs-lisp
+(cr-keybind global-map
+  "<f9>" #'comment-line
+  "<f10>" #'uncomment-line
+  "<f12>" #'bury-buffer
+  "s-d" #'date
+  "C-c n" #'display-line-numbers-mode)
+#+end_src
+
+** Evil keybindings
+#+begin_src emacs-lisp
+(use-package evil
+  :config
+  ;; by default, use Emacs bindings
+  (setq evil-default-state 'emacs)
+  ;; use vi bindings (Normal mode) only for the following major modes
+  (dolist (mode
+    '(
+      emacs-lisp-mode
+      org-mode
+      python-mode
+      python-ts-mode
+      sh-mode
+      text-mode
+    ))
+    (evil-set-initial-state mode 'normal))
+  ;; use Emacs bindings for the following major modes
+  (dolist (mode
+    '(
+      grep-mode
+      help-mode
+      Info-mode
+    ))
+    (evil-set-initial-state mode 'emacs))
+  (define-key evil-normal-state-map "\M-." nil)
+  (define-key evil-normal-state-map (kbd "C-.") nil)
+  (evil-mode 1))
+
+(use-package evil-surround
+  :config
+  (global-evil-surround-mode 1))
+
+(use-package evil-org
+  :after org
+  :hook (org-mode . evil-org-mode)
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+#+end_src
+
+** Which-key
+Show a menu of available key bindings, after a prefix key is entered
+#+begin_src emacs-lisp
+(use-package which-key
+  :delight
+  :config
+  (which-key-mode))
+#+end_src
+
 * Packages
-
-** Preamble
+** Appearance
+*** Fill column indicator
 #+begin_src emacs-lisp
-(message "Loading packages...")
-(eval-when-compile
-  (require 'use-package))
-(require 'bind-key)
-
-;; Download packages automatically if not installed
-;; (require 'use-package-ensure)
-;; (setq use-package-always-ensure t)
-;; (setq use-package-verbose t)
+(use-package fill-column-indicator
+  :hook ((c-mode-common . fci-mode)
+	 (python-mode . fci-mode))
+  ;; :config
+  ;; (setq fci-rule-color (face-attribute font-lock-comment-face :foreground))
+  )
 #+end_src
 
-*** Delight
-Simplify mode line, ignoring some minor modes
+*** Pulsar
+The variable =pulsar-pulse-functions= lets you add more functions that should
+cause a pulse after they're invoked.
 #+begin_src emacs-lisp
-(require 'delight)
-(delight '((eldoc-mode nil "eldoc")))
-(delight '((buffer-face-mode nil "face-remap")))
-(delight '((evil-org-mode nil "evil-org")))
-#+end_src
-
-** Dired
-Configure =dired= do use simplified view
-#+begin_src emacs-lisp
-(add-hook 'dired-mode-hook 'dired-hide-details-mode)
-;; (setq dired-hide-details-hide-symlink-targets nil)
-
-;; Highlight current line
-(add-hook 'dired-mode-hook 'hl-line-mode)
-(add-hook 'bookmark-bmenu-mode-hook 'hl-line-mode)
-
-;; Useful when using two dired windows
-(setq dired-dwim-target t)
-#+end_src
-
-Guess what shell command to apply to files
-#+begin_src emacs-lisp
-(use-package dired-x
-  :hook (dired-mode . (lambda() (dired-omit-mode 1)))
+(use-package pulsar
   :config
-  (setq dired-guess-shell-alist-user
-	'((".*" "open"))))
+  (add-hook 'next-error-hook #'pulsar-pulse-line)
+  (add-hook 'consult-after-jump-hook #'pulsar-recenter-top)
+  (add-hook 'consult-after-jump-hook #'pulsar-reveal-entry)
+  (add-hook 'imenu-after-jump-hook #'pulsar-recenter-top)
+  (add-hook 'imenu-after-jump-hook #'pulsar-reveal-entry)
+  :init
+  (pulsar-global-mode t))
 #+end_src
+
+*** Rainbow delimiters
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :hook ((lisp-mode . rainbow-delimiters-mode)
+	 (emacs-lisp-mode . rainbow-delimiters-mode)
+	 (LaTeX-mode . rainbow-delimiters-mode)))
+#+end_src
+
+*** Whitespace
+#+begin_src emacs-lisp
+(use-package whitespace
+  :hook ((c-mode-common LaTeX-mode org-mode python-mode) . whitespace-mode)
+  :delight
+  :config
+  (setq whitespace-style '(face trailing tabs empty tab-mark)))
+#+end_src
+
 ** Completion
-*** Isearch
-Display counter showing the total number of matches
-#+begin_src emacs-lisp
-(setq isearch-lazy-count t)
-(setq lazy-count-prefix-format "(%s/%s) ")
-#+end_src
-
-Make regular Isearch interpret space as a wildcard
-#+begin_src emacs-lisp
-(setq search-whitespace-regexp ".*?")
-#+end_src
-
-*** Marginalia
-#+begin_src emacs-lisp
-(use-package marginalia
-  :ensure t
-  :config
-  (marginalia-mode))
-#+end_src
-
-*** Vertico
-#+begin_src emacs-lisp
-;; Enable vertico
-(use-package vertico
-  :init
-  (vertico-mode))
-
-;; Persist history over Emacs restarts. Vertico sorts by history position.
-(use-package savehist
-  :init
-  (savehist-mode))
-
-;; A few more useful configurations...
-(use-package emacs
-  :init
-  ;; Add prompt indicator to `completing-read-multiple'.
-  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
-  (defun crm-indicator (args)
-    (cons (format "[CRM%s] %s"
-		  (replace-regexp-in-string
-		   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-		   crm-separator)
-		  (car args))
-	  (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
-  ;; Do not allow the cursor in the minibuffer prompt
-  (setq minibuffer-prompt-properties
-	'(read-only t cursor-intangible t face minibuffer-prompt))
-  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-
-  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-  ;; Vertico commands are hidden in normal buffers.
-  ;; (setq read-extended-command-predicate
-  ;;       #'command-completion-default-include-p)
-
-  ;; Enable recursive minibuffers
-  (setq enable-recursive-minibuffers t))
-#+end_src
-
-*** Orderless
-#+begin_src emacs-lisp
-(use-package orderless
-  :ensure t
-  :init
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles basic partial-completion)))))
-#+end_src
-
 *** Consult
 #+begin_src emacs-lisp
 ;; Example configuration for Consult
@@ -395,301 +425,125 @@ Use dabbrev with Corfu
 (dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
 #+end_src
 
+*** Isearch
+Display counter showing the total number of matches
+#+begin_src emacs-lisp
+(setq isearch-lazy-count t)
+(setq lazy-count-prefix-format "(%s/%s) ")
+#+end_src
+
+Make regular Isearch interpret space as a wildcard
+#+begin_src emacs-lisp
+(setq search-whitespace-regexp ".*?")
+#+end_src
+
+*** Marginalia
+#+begin_src emacs-lisp
+(use-package marginalia
+  :ensure t
+  :config
+  (marginalia-mode))
+#+end_src
+
+*** Orderless
+#+begin_src emacs-lisp
+(use-package orderless
+  :ensure t
+  :init
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles basic partial-completion)))))
+#+end_src
+
+*** Vertico
+#+begin_src emacs-lisp
+;; Enable vertico
+(use-package vertico
+  :init
+  (vertico-mode))
+
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(use-package savehist
+  :init
+  (savehist-mode))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+		  (replace-regexp-in-string
+		   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+		   crm-separator)
+		  (car args))
+	  (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+	'(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+  ;; Vertico commands are hidden in normal buffers.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
+#+end_src
+
+** Dired
+Configure =dired= do use simplified view
+#+begin_src emacs-lisp
+(add-hook 'dired-mode-hook 'dired-hide-details-mode)
+;; (setq dired-hide-details-hide-symlink-targets nil)
+
+;; Highlight current line
+(add-hook 'dired-mode-hook 'hl-line-mode)
+(add-hook 'bookmark-bmenu-mode-hook 'hl-line-mode)
+
+;; Useful when using two dired windows
+(setq dired-dwim-target t)
+#+end_src
+
+Guess what shell command to apply to files
+#+begin_src emacs-lisp
+(use-package dired-x
+  :hook (dired-mode . (lambda() (dired-omit-mode 1)))
+  :config
+  (setq dired-guess-shell-alist-user
+	'((".*" "open"))))
+#+end_src
 ** Embark
+Provide a sort of "right-click contextual menu" for actions available in the
+minibuffer, or for the symbol at point
 #+begin_src emacs-lisp
 (use-package embark
   :ensure t
 
   :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
+  (("C-." . embark-act)
+   ("C-;" . embark-dwim)
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
 
   :init
-
   ;; Optionally replace the key help with a completing-read interface
   (setq prefix-help-command #'embark-prefix-help-command)
 
-  ;; Show the Embark target at point via Eldoc.  You may adjust the Eldoc
-  ;; strategy, if you want to see the documentation from multiple providers.
-  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
-
   :config
-
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
 
-;; Consult users will also want the embark-consult package.
 (use-package embark-consult
-  :ensure t ; only need to install it, embark loads it after consult if found
+  :ensure t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
-#+end_src
-
-** Global keybindings
-#+begin_src emacs-lisp
-(use-package bind-key
-  :config
-  (bind-key "<f9>" 'comment-line)
-  (bind-key "<f10>" 'uncomment-line)
-  (bind-key "<f12>" 'bury-buffer)
-  (bind-key "s-d" 'date)
-  (bind-key "C-c n" 'display-line-numbers-mode))
-#+end_src
-
-** Evil keybindings
-#+begin_src emacs-lisp
-(use-package evil
-  :config
-  ;; by default, use Emacs bindings
-  (setq evil-default-state 'emacs)
-  ;; use vi bindings (Normal mode) only for the following major modes
-  (dolist (mode
-    '(
-      emacs-lisp-mode
-      org-mode
-      python-mode
-      python-ts-mode
-      sh-mode
-      text-mode
-    ))
-    (evil-set-initial-state mode 'normal))
-  (evil-set-initial-state 'grep-mode 'emacs)
-  (define-key evil-normal-state-map "\M-." nil)
-  (evil-mode 1))
-
-(use-package evil-surround
-  :config
-  (global-evil-surround-mode 1))
-
-(use-package evil-org
-  :after org
-  :hook (org-mode . evil-org-mode)
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
-#+end_src
-
-** Pulsar
-The variable =pulsar-pulse-functions= lets you add more functions that should
-cause a pulse after they're invoked.
-#+begin_src emacs-lisp
-(use-package pulsar
-  :config
-  (add-hook 'next-error-hook #'pulsar-pulse-line)
-  (add-hook 'consult-after-jump-hook #'pulsar-recenter-top)
-  (add-hook 'consult-after-jump-hook #'pulsar-reveal-entry)
-  (add-hook 'imenu-after-jump-hook #'pulsar-recenter-top)
-  (add-hook 'imenu-after-jump-hook #'pulsar-reveal-entry)
-  :init
-  (pulsar-global-mode t))
-#+end_src
-
-** Ripgrep
-#+begin_src emacs-lisp
-(use-package ripgrep
-  :defer t)
-#+end_src
-
-** Xterm-color
-Use xterm-color for eshell
-#+begin_src emacs-lisp
-(use-package xterm-color
-  :hook (eshell-mode . (lambda ()
-			 (setenv "TERM" "xterm-256color"))))
-#+end_src
-
-** Conda configuration
-#+begin_src emacs-lisp
-(use-package conda
-  :hook (eshell-mode . conda-env-initialize-eshell)
-  ;; :init
-  ;; (conda-env-initialize-interactive-shells)
-  ;; (conda-env-autoactivate-mode t)
-  )
-#+end_src
-
-** Ignore generated files
-#+begin_src emacs-lisp
-(setq completion-ignored-extensions
-      (append completion-ignored-extensions
-	     '(".fdb_latexmk" ".fls" ".log" ".out" ".pdf" ".synctex.gz")))
-#+end_src
-
-** Git
-#+begin_src emacs-lisp
-(use-package magit
-  :bind (("<f8>" . magit-status)
-	 ("C-x M-g" . magit-dispatch)
-	 ("C-c M-g" . magit-file-dispatch)))
-
-;;;; Show Git changed lines in gutter
-(use-package diff-hl
-  :hook ((vc-dir-mode . turn-on-diff-hl-mode)
-	 (magit-pre-refresh . diff-hl-magit-pre-refresh)
-	 (magit-post-refresh . diff-hl-magit-post-refresh))
-  :init
-  (global-diff-hl-mode))
-#+end_src
-
-** C stuff
-#+begin_src emacs-lisp
-(use-package cc-mode
-  :bind (:map c-mode-map
-	      ("<f5>" . compile)
-	      ("C-c C-i" . insert-include-guard))
-  :pin manual)
-
-(use-package google-c-style
-  :hook ((c-mode-common . google-set-c-style)
-	 (c-mode-common . google-make-newline-indent)))
-#+end_src
-** Makefiles
-#+begin_src emacs-lisp
-(use-package make-mode
-  :bind (:map makefile-mode-map
-	      ("<f5>" . compile)))
-#+end_src
-
-** Octave
-#+begin_src emacs-lisp
-(use-package octave
-  :mode ("\\.m\\'" . octave-mode))
-#+end_src
-
-** Python
-#+begin_src emacs-lisp
-(use-package elpy
-  :disabled t
-  :defer t
-  :init
-  (advice-add 'python-mode :before 'elpy-enable)
-  (setenv "WORKON_HOME" "~/miniconda3/")
-  :config
-  (bind-key "M-." 'elpy-goto-definition))
-
-(use-package python
-  :bind (:map python-mode-map
-	      ("<f11>" . numpydoc-generate)))
-
-(use-package numpydoc
-  :commands numpydoc-generate)
-
-(use-package python-isort
-    :hook (python-mode . python-isort-on-save-mode)
-    :config
-    (setq python-isort-arguments '("--line-length=88" "-m=3" "-tc" "-fgw=0"
-                                   "-ca" "--stdout" "--atomic" "-")))
-#+end_src
-
-** Treesitter parsers
-In order to use the treesitter versions of these language modes, need to install
-the corresponding grammars with =treesit-install-language-grammar=.
-#+begin_src emacs-lisp
-(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
-(add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
-(add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
-(add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
-(add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
-#+end_src
-
-** Github-Flavored Markdown
-#+begin_src emacs-lisp
-(use-package gfm-mode
-  :ensure markdown-mode
-  :mode "README\\.md\\'")
-#+end_src
-
-** Unfill
-#+begin_src emacs-lisp
-(use-package unfill
-  :bind ([remap fill-paragraph] . unfill-toggle))
-#+end_src
-
-** Fill column indicator
-#+begin_src emacs-lisp
-(use-package fill-column-indicator
-  :hook ((c-mode-common . fci-mode)
-	 (python-mode . fci-mode))
-  ;; :config
-  ;; (setq fci-rule-color (face-attribute font-lock-comment-face :foreground))
-  )
-#+end_src
-
-** Whitespace
-#+begin_src emacs-lisp
-(use-package whitespace
-  :hook ((c-mode-common LaTeX-mode org-mode python-mode) . whitespace-mode)
-  :delight
-  :config
-  (setq whitespace-style '(face trailing tabs empty tab-mark)))
-#+end_src
-
-** Rainbow delimiters
-#+begin_src emacs-lisp
-(use-package rainbow-delimiters
-  :hook ((lisp-mode . rainbow-delimiters-mode)
-	 (emacs-lisp-mode . rainbow-delimiters-mode)
-	 (LaTeX-mode . rainbow-delimiters-mode)))
-#+end_src
-
-** Flyspell
-#+begin_src emacs-lisp
-(use-package flyspell
-  :hook ((text-mode . flyspell-mode)
-	 (c-mode-common . flyspell-prog-mode)))
-#+end_src
-
-** LaTeX
-#+begin_src emacs-lisp
-(use-package tex
-  :ensure auctex
-  :defer t
-  :defines font-latex-fontify-script
-  :config
-  (setq TeX-auto-save t)
-  (setq TeX-parse-self t)
-  (setq TeX-view-program-list '(("open" "open %o")
-				("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b")))
-  (setq TeX-view-program-selection '((output-dvi "open")
-				     (output-pdf "Skim")
-				     (output-html "open")))
-  (add-hook 'LaTeX-mode-hook 'visual-line-mode)
-  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
-  ;; do not fontify subscripts and superscripts
-  (setq font-latex-fontify-script nil))
-
-(use-package latex
-  :ensure auctex
-  ;; This local keymap binding must be done here, not in 'tex'
-  :bind (:map LaTeX-mode-map ("<f5>" . compile)))
-#+end_src
-
-** RefTeX
-#+begin_src emacs-lisp
-(use-package reftex
-  :hook (LaTeX-mode . turn-on-reftex)
-  :config
-  (setq reftex-plug-into-AUCTeX t)
-  (setq reftex-use-external-file-finders t)
-  (setq reftex-external-file-finders
-	'(("tex" . "kpsewhich -format=.tex %f")
-	  ("bib" . "kpsewhich -format=.bib %f")))
-  (setq reftex-ref-macro-prompt nil)  ; do not prompt for ref/pageref
-  ;; Define index macros
-  (setq reftex-index-macros
-	'(;("\\ii{*}" "idx" ?o "" nil t)
-	  ("\\indexdefn{*}" "idx" ?d "" nil t)
-	  ("\\defined{*}" "idx" ?D "" nil nil)
-	  ("\\theoremname{*}" "idx" ?t "" nil nil)
-	  index))
-  (setq reftex-index-default-macro '(?i ""))
-  (setq reftex-index-default-tag nil))
 #+end_src
 
 ** Org
@@ -723,32 +577,224 @@ the corresponding grammars with =treesit-install-language-grammar=.
   :hook (org-mode . org-superstar-mode))
 #+end_src
 
-** Eglot
+** Programming
+*** C
+#+begin_src emacs-lisp
+(use-package cc-mode
+  :bind (:map c-mode-map
+	      ("<f5>" . compile)
+	      ("C-c C-i" . insert-include-guard))
+  :pin manual)
+
+(use-package google-c-style
+  :hook ((c-mode-common . google-set-c-style)
+	 (c-mode-common . google-make-newline-indent)))
+#+end_src
+*** Makefiles
+#+begin_src emacs-lisp
+(use-package make-mode
+  :bind (:map makefile-mode-map
+	      ("<f5>" . compile)))
+#+end_src
+
+*** Octave
+#+begin_src emacs-lisp
+(use-package octave
+  :mode ("\\.m\\'" . octave-mode))
+#+end_src
+
+*** Python
+#+begin_src emacs-lisp
+(use-package elpy
+  :disabled t
+  :defer t
+  :init
+  (advice-add 'python-mode :before 'elpy-enable)
+  (setenv "WORKON_HOME" "~/miniconda3/")
+  :config
+  (bind-key "M-." 'elpy-goto-definition))
+
+(use-package python
+  :bind (:map python-mode-map
+	      ("<f11>" . numpydoc-generate)))
+
+(use-package numpydoc
+  :commands numpydoc-generate)
+
+(use-package python-isort
+    :hook (python-mode . python-isort-on-save-mode)
+    :config
+    (setq python-isort-arguments '("--line-length=88" "-m=3" "-tc" "-fgw=0"
+                                   "-ca" "--stdout" "--atomic" "-")))
+#+end_src
+
+*** Conda configuration
+#+begin_src emacs-lisp
+(use-package conda
+  :hook (eshell-mode . conda-env-initialize-eshell)
+  ;; :init
+  ;; (conda-env-initialize-interactive-shells)
+  ;; (conda-env-autoactivate-mode t)
+  )
+#+end_src
+
+*** Treesitter parsers
+In order to use the treesitter versions of these language modes, need to install
+the corresponding grammars with =treesit-install-language-grammar=.
+#+begin_src emacs-lisp
+(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+(add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+(add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+(add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
+(add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
+#+end_src
+
+*** Eglot
 Language server protocol (LSP) client
 #+begin_src emacs-lisp
 (use-package eglot)
 #+end_src
 
-** Which-key
+** Terminals
+*** Xterm-color
+Use xterm-color for eshell
 #+begin_src emacs-lisp
-(use-package which-key
-  :delight
-  :config
-  (which-key-mode))
+(use-package xterm-color
+  :hook (eshell-mode . (lambda ()
+			 (setenv "TERM" "xterm-256color"))))
 #+end_src
 
-** Vterm
+*** Vterm
 #+begin_src emacs-lisp
 (use-package vterm)
 #+end_src
 
-** Wgrep
+** Text processing
+*** Unfill
+#+begin_src emacs-lisp
+(use-package unfill
+  :bind ([remap fill-paragraph] . unfill-toggle))
+#+end_src
+
+*** Flyspell
+#+begin_src emacs-lisp
+(use-package flyspell
+  :hook ((text-mode . flyspell-mode)
+	 (c-mode-common . flyspell-prog-mode)))
+#+end_src
+
+*** Ripgrep
+Recursive grep in a directory
+#+begin_src emacs-lisp
+(use-package ripgrep
+  :defer t)
+#+end_src
+
+*** Wgrep
 Make grep buffers editable
 #+begin_src emacs-lisp
 (require 'wgrep)
 #+end_src
 
-* Set theme
+** TeX
+*** AucTeX
+#+begin_src emacs-lisp
+(use-package tex
+  :ensure auctex
+  :defer t
+  :defines font-latex-fontify-script
+  :config
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t)
+  (setq TeX-view-program-list '(("open" "open %o")
+				("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b")))
+  (setq TeX-view-program-selection '((output-dvi "open")
+				     (output-pdf "Skim")
+				     (output-html "open")))
+  (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
+  ;; do not fontify subscripts and superscripts
+  (setq font-latex-fontify-script nil))
+
+(use-package latex
+  :ensure auctex
+  ;; This local keymap binding must be done here, not in 'tex'
+  :bind (:map LaTeX-mode-map ("<f5>" . compile)))
+#+end_src
+
+*** RefTeX
+#+begin_src emacs-lisp
+(use-package reftex
+  :hook (LaTeX-mode . turn-on-reftex)
+  :config
+  (setq reftex-plug-into-AUCTeX t)
+  (setq reftex-use-external-file-finders t)
+  (setq reftex-external-file-finders
+	'(("tex" . "kpsewhich -format=.tex %f")
+	  ("bib" . "kpsewhich -format=.bib %f")))
+  (setq reftex-ref-macro-prompt nil)  ; do not prompt for ref/pageref
+  ;; Define index macros
+  (setq reftex-index-macros
+	'(;("\\ii{*}" "idx" ?o "" nil t)
+	  ("\\indexdefn{*}" "idx" ?d "" nil t)
+	  ("\\defined{*}" "idx" ?D "" nil nil)
+	  ("\\theoremname{*}" "idx" ?t "" nil nil)
+	  index))
+  (setq reftex-index-default-macro '(?i ""))
+  (setq reftex-index-default-tag nil))
+#+end_src
+
+*** Ignore generated files
+#+begin_src emacs-lisp
+(setq completion-ignored-extensions
+      (append completion-ignored-extensions
+	     '(".fdb_latexmk" ".fls" ".log" ".out" ".pdf" ".synctex.gz")))
+#+end_src
+
+** Version control
+*** Magit
+#+begin_src emacs-lisp
+(use-package magit
+  :bind (("<f8>" . magit-status)
+	 ("C-x M-g" . magit-dispatch)
+	 ("C-c M-g" . magit-file-dispatch)))
+#+end_src
+
+*** Highlight changed lines in gutter
+#+begin_src emacs-lisp
+(use-package diff-hl
+  :hook ((vc-dir-mode . turn-on-diff-hl-mode)
+	 (magit-pre-refresh . diff-hl-magit-pre-refresh)
+	 (magit-post-refresh . diff-hl-magit-post-refresh))
+  :init
+  (global-diff-hl-mode))
+#+end_src
+
+*** Github-Flavored Markdown
+#+begin_src emacs-lisp
+(use-package gfm-mode
+  :ensure markdown-mode
+  :mode "README\\.md\\'")
+#+end_src
+
+** Other applications
+*** Calc
+#+begin_src emacs-lisp
+(use-package calc
+  :defer t
+  :init
+  (setq calc-gnuplot-default-device "qt"))
+#+end_src
+
+*** Ledger
+#+begin_src emacs-lisp
+(use-package ledger-mode
+  :mode "\\.ledger\\'")
+#+end_src
+
+* Fonts and themes
+** Load various themes
 #+begin_src emacs-lisp
 (use-package ef-themes)
 
@@ -776,20 +822,6 @@ Make grep buffers editable
 (set-face-attribute 'default nil :font "Hack-14")
 (set-face-attribute 'fixed-pitch nil :font "Hack-14")
 (set-face-attribute 'variable-pitch nil :font "Fira Sans-16")
-#+end_src
-
-** Calc
-#+begin_src emacs-lisp
-(use-package calc
-  :defer t
-  :init
-  (setq calc-gnuplot-default-device "qt"))
-#+end_src
-
-** Ledger
-#+begin_src emacs-lisp
-(use-package ledger-mode
-  :mode "\\.ledger\\'")
 #+end_src
 
 * Tidy up and start server
