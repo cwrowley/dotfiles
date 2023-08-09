@@ -14,24 +14,27 @@
 ;;; Code:
 #+end_src
 
-** Disable startup screen, toolbar, etc
+** Garbage collection
+Set the garbage collector threshold, to avoid collections
 #+begin_src emacs-lisp
-;;;; No startup screen
-(setq inhibit-startup-screen t)
+(setq gc-cons-percentage 0.5
+      gc-cons-threshold (* 128 1024 1024))
 
-;;;; No scroll bars
-(scroll-bar-mode -1)
-
-;;;; Disable the tool bar
-(tool-bar-mode -1)
+(add-hook 'after-init-hook #'garbage-collect t)
 #+end_src
-
-** Save backup files to specified directory
+** Report time spent loading this file
+From [[https://github.com/jwiegley/dot-emacs/blob/master/init.org][John Wiegley's init file]]
 #+begin_src emacs-lisp
-(setq make-backup-files t)
-(setq version-control t)
-(setq delete-old-versions t)
-(setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
+(defconst emacs-start-time (current-time))
+
+(defun report-time-since-load (&optional suffix)
+  (message "Loading init...done (%.3fs)%s"
+           (float-time (time-subtract (current-time) emacs-start-time))
+           suffix))
+
+(add-hook 'after-init-hook
+          #'(lambda () (report-time-since-load " [after-init]"))
+          t)
 #+end_src
 
 ** Auto revert buffers
@@ -115,6 +118,37 @@ Load this before other packages, because delight provides a keyword for =use-pac
 (delight '((eldoc-mode nil "eldoc")))
 (delight '((buffer-face-mode nil "face-remap")))
 (delight '((evil-org-mode nil "evil-org")))
+#+end_src
+
+** Emacs
+#+begin_src emacs-lisp
+(use-package emacs
+  :custom
+  (completion-ignored-extensions
+   '(".aux"
+     ".bbl"
+     ".bin"
+     ".blg"
+     ".git/"
+     ".o"
+     ".pyc"
+     ".so"
+     ".synctex.gz"
+     ".toc"
+     "~"))
+  (inhibit-startup-screen t)
+  (initial-buffer-choice t)
+  (initial-scratch-message "")
+  (scroll-bar-mode nil)
+  (tool-bar-mode nil)
+
+  ;; files.el
+  (make-backup-files t)
+  (backup-directory-alist '((".*" . "~/.emacs_backups/")))
+  (delete-old-versions t)
+  (directory-free-space-args "-kh")
+  (version-control t)
+)
 #+end_src
 
 * Custom functions and macros
