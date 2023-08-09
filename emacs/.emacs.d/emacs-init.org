@@ -278,9 +278,9 @@ cause a pulse after they're invoked.
 (use-package pulsar
   :config
   (add-hook 'next-error-hook #'pulsar-pulse-line)
-  (add-hook 'consult-after-jump-hook #'pulsar-recenter-top)
+  (add-hook 'consult-after-jump-hook #'pulsar-recenter-middle)
   (add-hook 'consult-after-jump-hook #'pulsar-reveal-entry)
-  (add-hook 'imenu-after-jump-hook #'pulsar-recenter-top)
+  (add-hook 'imenu-after-jump-hook #'pulsar-recenter-middle)
   (add-hook 'imenu-after-jump-hook #'pulsar-reveal-entry)
   :init
   (pulsar-global-mode t))
