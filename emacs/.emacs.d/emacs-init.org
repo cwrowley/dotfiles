@@ -567,15 +567,13 @@ Make regular Isearch interpret space as a wildcard
 ** Dired
 Configure =dired= do use simplified view
 #+begin_src emacs-lisp
-(add-hook 'dired-mode-hook 'dired-hide-details-mode)
-;; (setq dired-hide-details-hide-symlink-targets nil)
-
-;; Highlight current line
-(add-hook 'dired-mode-hook 'hl-line-mode)
-(add-hook 'bookmark-bmenu-mode-hook 'hl-line-mode)
-
-;; Useful when using two dired windows
-(setq dired-dwim-target t)
+(use-package dired
+  :bind (:map dired-mode-map
+              ("C-c C-a" . org-attach-dired-to-subtree))
+  :hook ((dired-mode . dired-hide-details-mode)
+         (dired-mode . hl-line-mode))
+  :custom
+  (dired-dwim-target t))
 #+end_src
 
 Guess what shell command to apply to files
@@ -586,6 +584,15 @@ Guess what shell command to apply to files
   (setq dired-guess-shell-alist-user
 	'((".*" "open"))))
 #+end_src
+
+List directories first
+#+begin_src emacs-lisp
+(use-package ls-lisp
+  :custom
+  (ls-lisp-dirs-first t)
+  (ls-lisp-use-insert-directory-program nil))
+#+end_src
+
 ** Embark
 Provide a sort of "right-click contextual menu" for actions available in the
 minibuffer, or for the symbol at point
