@@ -251,6 +251,8 @@ Load this before other packages, because delight provides a keyword for =use-pac
   ;; use Emacs bindings for the following major modes
   (dolist (mode
     '(
+      elfeed-search-mode
+      elfeed-show-mode
       grep-mode
       help-mode
       Info-mode
@@ -432,6 +434,7 @@ Disabled for now
 
   ;; The :init configuration is always executed (Not lazy)
   :init
+  (setq consult-locate-args "locate -i")
 
   ;; Optionally configure the register formatting. This improves the register
   ;; preview for `consult-register', `consult-register-load',
@@ -786,6 +789,26 @@ Language server protocol (LSP) client
 
 (use-package org-superstar
   :hook (org-mode . org-superstar-mode))
+#+end_src
+
+** RSS reader
+*** Elfeed
+#+begin_src emacs-lisp
+  (use-package elfeed
+    :bind ("C-x w" . elfeed)
+    :config
+    (setq elfeed-feeds
+     '(("https://sachachua.com/blog/feed" emacs)
+       ;; ("http://arxiv.org/rss/math.DS" arxiv math)	    ; dynamical systems
+       ;; ("http://arxiv.org/rss/math.NA" arxiv math)	    ; numerical analysis
+       ;; ("http://arxiv.org/rss/math.OC" arxiv math)	    ; optimization and control
+       ;; ("http://arxiv.org/rss/physics.flu-dyn" arxiv phys) ; fluid dynamics
+       ;; ("http://arxiv.org/rss/physics.data-an" arxiv phys) ; data analysis
+       ;; ("http://arxiv.org/rss/cs.CE" arxiv cs)	; computational engineering
+       ;; ("http://arxiv.org/rss/cs.LG" arxiv cs)	; machine learning
+       ;; ("http://arxiv.org/rss/eess.SP" arxiv ee)	; signal processing
+       ;; ("http://arxiv.org/rss/eess.SY" arxiv ee)	; systems and control
+      )))
 #+end_src
 
 ** Terminals
