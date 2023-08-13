@@ -755,6 +755,12 @@ Language server protocol (LSP) client
   ;; Custom views for org-agenda
   (setq org-agenda-custom-commands
     '(
+      ("d" "Agenda and deadlines"
+       ((agenda "")
+        (alltodo ""
+         ((org-agenda-skip-function '(org-agenda-skip-entry-if 'notdeadline))
+          (org-agenda-prefix-format '((todo . " %i %-18(org-entry-get nil \"DEADLINE\") %-12:c %s")))
+          (org-agenda-sorting-strategy '(deadline-up))))))
       ("e" "Agenda and emails"
        ((agenda "")
         (tags-todo "email")))
