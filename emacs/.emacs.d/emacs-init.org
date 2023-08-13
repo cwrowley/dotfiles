@@ -239,6 +239,7 @@ Load this before other packages, because delight provides a keyword for =use-pac
   ;; use vi bindings (Normal mode) only for the following major modes
   (dolist (mode
     '(
+      bibtex-mode
       emacs-lisp-mode
       org-mode
       python-mode
@@ -253,6 +254,7 @@ Load this before other packages, because delight provides a keyword for =use-pac
       grep-mode
       help-mode
       Info-mode
+      org-agenda-mode
     ))
     (evil-set-initial-state mode 'emacs))
   (define-key evil-normal-state-map "\M-." nil)
@@ -320,6 +322,52 @@ cause a pulse after they're invoked.
   :delight
   :config
   (setq whitespace-style '(face trailing tabs empty tab-mark)))
+#+end_src
+
+** Bibliography
+*** Set location of bib files
+#+begin_src emacs-lisp
+(defconst cr/bib-files '("~/gd/texmf/bibtex/bib/master.bib" "~/gd/texmf/bibtex/bib/jfull.bib"))
+#+end_src
+
+*** Citar
+Disabled for now
+#+begin_src emacs-lisp
+(use-package citar
+  :disabled
+  :custom
+  (citar-bibliography cr/bib-files)
+  (setq citar-default-action 'citar-open-entry)
+  :hook
+  ;; (LaTeX-mode . citar-capf-setup)
+  (org-mode . citar-capf-setup))
+
+(use-package citar-embark
+  :disabled
+  :after (citar embark)
+  ;; :delight t
+  :hook org-mode)
+#+end_src
+
+*** Org citations
+#+begin_src emacs-lisp
+(use-package oc
+  :config
+  (require 'oc-biblatex)
+  (setq org-cite-global-bibliography cr/bib-files)
+  ;; (require 'citar)
+  ;; (setq org-cite-insert-processor 'citar
+  ;;       org-cite-follow-processor 'citar
+  ;;       org-cite-activate-processor 'citar
+  ;;       org-cite-export-processors '((latex biblatex)
+  ;;                                    (t basic)))
+)
+#+end_src
+
+** Bookmark
+#+begin_src emacs-lisp
+(use-package bookmark
+  :hook (bookmark-bmenu-mode . hl-line-mode))
 #+end_src
 
 ** Completion
