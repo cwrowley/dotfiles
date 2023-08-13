@@ -2,6 +2,7 @@
 #+DATE: 8 Aug 2023
 #+AUTHOR: Clancy Rowley
 #+PROPERTY: header-args:emacs-lisp :tangle init.el
+#+STARTUP: content
 
 * General settings
 ** Header
@@ -117,7 +118,6 @@ Load this before other packages, because delight provides a keyword for =use-pac
 (require 'delight)
 (delight '((eldoc-mode nil "eldoc")))
 (delight '((buffer-face-mode nil "face-remap")))
-(delight '((evil-org-mode nil "evil-org")))
 #+end_src
 
 ** Emacs
@@ -200,37 +200,6 @@ Load this before other packages, because delight provides a keyword for =use-pac
    [?\C-u ?\M-! ?d ?a ?t ?e return ?\C-n])
 #+end_src
 
-* Keybindings
-** Macro
-Convenient macro for defining keybindings,
-from https://github.com/protesilaos/dotfiles/blob/master/emacs/.emacs.d/init.el
-
-#+begin_src emacs-lisp
-(defmacro cr-keybind (keymap &rest definitions)
-  "Expand key binding DEFINITIONS for the given KEYMAP.
-DEFINITIONS is a sequence of string and command pairs."
-  (declare (indent 1))
-  (unless (zerop (% (length definitions) 2))
-    (error "Uneven number of key+command pairs"))
-  (let ((keys (seq-filter #'stringp definitions))
-        ;; We do accept nil as a definition: it unsets the given key.
-        (commands (seq-remove #'stringp definitions)))
-    `(when-let (((keymapp ,keymap))
-                (map ,keymap))
-       ,@(mapcar
-          (lambda (pair)
-            (unless (and (null (car pair))
-                         (null (cdr pair)))
-              `(define-key map (kbd ,(car pair)) ,(cdr pair))))
-          (cl-mapcar #'cons keys commands)))))
-
-;; Sample of `cr-keybind'
-
-;; (cr-keybind global-map
-;;   "C-z" nil
-;;   "C-x b" #'switch-to-buffer
-;;   "C-x C-c" nil
-;;   "C-x k" #'kill-buffer)
 ** Open links to email messages
 #+begin_src emacs-lisp
 (require 'url-util)
@@ -245,14 +214,20 @@ DEFINITIONS is a sequence of string and command pairs."
 )
 #+end_src
 
+* Keybindings
 ** Global keybindings
+:PROPERTIES:
+:ORDERED:  t
+:END:
 #+begin_src emacs-lisp
-(cr-keybind global-map
-  "<f9>" #'comment-line
-  "<f10>" #'uncomment-line
-  "<f12>" #'bury-buffer
-  "s-d" #'date
-  "C-c n" #'display-line-numbers-mode)
+(bind-keys :map global-map
+  ("<f9>"  . comment-line)
+  ("<f10>" . uncomment-line)
+  ("<f12>" . bury-buffer)
+  ("s-d"   . date)
+  ("C-c n" . display-line-numbers-mode)
+  ("C-c v" . variable-pitch-mode)
+)
 #+end_src
 
 ** Evil keybindings
@@ -290,10 +265,8 @@ DEFINITIONS is a sequence of string and command pairs."
 
 (use-package evil-org
   :after org
-  :hook (org-mode . evil-org-mode)
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
+  :delight
+  :hook (org-mode . evil-org-mode))
 #+end_src
 
 ** Which-key
@@ -505,6 +478,8 @@ Make regular Isearch interpret space as a wildcard
 #+begin_src emacs-lisp
 ;; Enable vertico
 (use-package vertico
+  :bind (:map vertico-map
+         ("?" . minibuffer-completion-help))
   :init
   (vertico-mode))
 
@@ -610,12 +585,14 @@ minibuffer, or for the symbol at point
 #+begin_src emacs-lisp
 (use-package flymake
   :config
-  (cr-keybind flymake-mode-map
-    "C-x `"   #'flymake-goto-next-error
-    "M-g n"   #'flymake-goto-next-error
-    "M-g M-n" #'flymake-goto-next-error
-    "M-g p"   #'flymake-goto-prev-error
-    "M-g M-p" #'flymake-goto-prev-error))
+  :bind (:map flymake-mode-map
+   ("C-x `"   . flymake-goto-next-error)
+   ("M-g n"   . flymake-goto-next-error)
+   ("M-g M-n" . flymake-goto-next-error)
+   ("M-g p"   . flymake-goto-prev-error)
+   ("M-g M-p" . flymake-goto-prev-error)
+  )
+)
 #+end_src
 
 *** Makefiles
@@ -928,5 +905,4 @@ Make grep buffers editable
 * Tidy up and start server
 #+begin_src emacs-lisp
 (server-start)
-(message "...done loading Clancy's .emacs file")
 #+end_src
