@@ -927,11 +927,23 @@ Make grep buffers editable
   (global-diff-hl-mode))
 #+end_src
 
-*** Github-Flavored Markdown
+*** Markdown
 #+begin_src emacs-lisp
-(use-package gfm-mode
-  :ensure markdown-mode
-  :mode "README\\.md\\'")
+(use-package markdown-mode
+  :mode (("\\`README\\.md\\'" . gfm-mode)
+         ("\\.md\\'"          . markdown-mode)
+         ("\\.markdown\\'"    . markdown-mode))
+  :custom
+  (markdown-command "pandoc -f gfm+smart")
+  (markdown-command-needs-filename t)
+  (markdown-enable-math t)
+  (markdown-open-command "marked")
+  :custom-face
+  ;; (markdown-header-face-1 ((t (:inherit markdown-header-face-1 :height 2.0))))
+  ;; (markdown-header-face-2 ((t (:inherit markdown-header-face-2 :height 1.6))))
+  ;; (markdown-header-face-3 ((t (:inherit markdown-header-face-3 :height 1.4))))
+  ;; (markdown-header-face-4 ((t (:inherit markdown-header-face-4 :height 1.2))))
+)
 #+end_src
 
 ** Other applications
