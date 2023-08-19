@@ -907,6 +907,12 @@ Make grep buffers editable
   (setq reftex-index-default-tag nil))
 #+end_src
 
+*** CDLaTeX
+#+begin_src emacs-lisp
+(use-package cdlatex
+  :hook (LaTeX-mode . turn-on-cdlatex))
+#+end_src
+
 *** Ignore generated files
 #+begin_src emacs-lisp
 (setq completion-ignored-extensions
