@@ -326,6 +326,27 @@ cause a pulse after they're invoked.
   (setq whitespace-style '(face trailing tabs empty tab-mark)))
 #+end_src
 
+*** Mode line
+#+begin_src emacs-lisp :tangle no
+(use-package telephone-line
+:config
+(telephone-line-mode t))
+#+end_src
+
+To use icons in the mode line, run =M-x nerd-icons-install-fonts=
+#+begin_src emacs-lisp
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode)
+  :init
+  (setq doom-modeline-modal-icon nil
+        doom-modeline-env-python-executable "python")
+  :custom-face
+  (doom-modeline-evil-insert-state ((t (:inherit font-lock-keyword-face))))
+  (doom-modeline-evil-normal-state ((t (:inherit doom-modeline-info))))
+  (doom-modeline-evil-emacs-state ((t (:inherit font-lock-builtin-face))))
+)
+#+end_src
+
 ** Bibliography
 *** Set location of bib files
 #+begin_src emacs-lisp
@@ -995,7 +1016,7 @@ Make grep buffers editable
   (setq zenburn-use-variable-pitch t)
   (setq zenburn-scale-org-headlines t))
 
-(load-theme 'modus-vivendi t)
+(load-theme 'modus-vivendi-tinted t)
 #+end_src
 
 ** Fonts
