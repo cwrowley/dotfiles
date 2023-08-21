@@ -805,6 +805,7 @@ Language server protocol (LSP) client
     :config
     (setq elfeed-feeds
      '(("https://sachachua.com/blog/feed" emacs)
+       ("https://www.howardism.org/index.xml" emacs)
        ;; ("http://arxiv.org/rss/math.DS" arxiv math)	    ; dynamical systems
        ;; ("http://arxiv.org/rss/math.NA" arxiv math)	    ; numerical analysis
        ;; ("http://arxiv.org/rss/math.OC" arxiv math)	    ; optimization and control
