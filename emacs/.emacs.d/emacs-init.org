@@ -740,8 +740,10 @@ Language server protocol (LSP) client
          ("C-c c" . org-capture)
          ("C-c d" . org-time-stamp-inactive))
   :config
-  (setq org-agenda-files '("~/gd/Todo/todo.org" "~/gd/Reviews/reviews.org"))
-  (setq org-default-notes-file "~/gd/Todo/todo.org")
+  (setq org-agenda-files '("~/org/todo.org" "~/org/inbox.org" "~/gd/Reviews/reviews.org"))
+  (setq org-default-notes-file "~/org/todo.org")
+  (setq org-refile-targets '((nil . (:level . 1))
+                             (org-agenda-files . (:level . 1))))
   ;; use symbolic links for attachments
   (setq org-attach-method 'lns)
   (setq org-startup-folded 'content)
