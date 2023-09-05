@@ -872,17 +872,17 @@ Use xterm-color for eshell
 	 (c-mode-common . flyspell-prog-mode)))
 #+end_src
 
-*** Ripgrep
-Recursive grep in a directory
-#+begin_src emacs-lisp
-(use-package ripgrep
-  :defer t)
-#+end_src
-
 *** Wgrep
 Make grep buffers editable
 #+begin_src emacs-lisp
 (require 'wgrep)
+#+end_src
+
+*** Ripgrep
+Recursive grep in a directory
+#+begin_src emacs-lisp
+(use-package rg
+  :after wgrep)
 #+end_src
 
 ** TeX
