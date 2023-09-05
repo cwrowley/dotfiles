@@ -148,6 +148,9 @@ Load this before other packages, because delight provides a keyword for =use-pac
   (delete-old-versions t)
   (directory-free-space-args "-kh")
   (version-control t)
+
+  :config
+  (setq-default indent-tabs-mode nil)
 )
 #+end_src
 
@@ -157,10 +160,10 @@ Load this before other packages, because delight provides a keyword for =use-pac
 (defun replace-in-string (string regexp newtext)
   "Replace regular expression REGEXP with NEWTEXT in the given STRING."
   (let ((skip (length newtext))
-	(start 0))
+        (start 0))
     (while (string-match regexp string start)
       (setq string (replace-match newtext t t string)
-	    start (+ skip (match-beginning 0)))))
+            start (+ skip (match-beginning 0)))))
   string)
 
 (defun insert-include-guard ()
@@ -168,7 +171,7 @@ Load this before other packages, because delight provides a keyword for =use-pac
   (interactive)
   (goto-char 1)
   (let* ((inc-name (replace-in-string (buffer-name (current-buffer)) "\\." "_" ) )
-	 (ftag (concat "" (upcase inc-name ) "" )))
+         (ftag (concat "" (upcase inc-name ) "" )))
     (insert (concat "#ifndef " ftag))
     (newline)
     (insert (concat "#define " ftag))
@@ -509,11 +512,11 @@ Popup window for code completion
 Use dabbrev with Corfu
 #+begin_src emacs-lisp
 (use-package dabbrev
-;; Swap M-/ and C-M-/
-:bind (("M-/" . dabbrev-completion)
-("C-M-/" . dabbrev-expand))
-:custom
-(dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
+  ;; Swap M-/ and C-M-/
+  :bind (("M-/" . dabbrev-completion)
+	 ("C-M-/" . dabbrev-expand))
+  :custom
+  (dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
 #+end_src
 
 *** Isearch
@@ -748,7 +751,7 @@ Language server protocol (LSP) client
   (setq org-attach-method 'lns)
   (setq org-startup-folded 'content)
   (require 'org-tempo)
-  ; use tempo for template expansion (e.g., <se [TAB])
+  ;; use tempo for template expansion (e.g., <se [TAB])
   (add-to-list 'org-modules 'org-tempo t)
   (add-to-list 'org-structure-template-alist '("se" . "src emacs-lisp"))
   ;; (add-hook 'org-mode-hook 'variable-pitch-mode)
