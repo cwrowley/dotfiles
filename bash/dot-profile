@@ -21,7 +21,7 @@ export PATH
 
 export MANPATH="/opt/local/man:/usr/local/man:/usr/local/mysql/man:${MANPATH}"
 
-export INFOPATH="$HOME/lib/info"
+export INFOPATH="$HOME/.local/share/info"
 
 # export PYTHONPATH="$HOME/lib/python:/Library/Frameworks/EPD64.framework/Versions/Current/lib/python2.7/site-packages"
 # export PYTHONPATH="$HOME/Local/Consulting/Blood Volume/python:${PYTHONPATH}"
