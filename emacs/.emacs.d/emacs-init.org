@@ -96,6 +96,9 @@ My custom info files are specified in INFOPATH.  Append the default ones here.
   (require 'use-package))
 (require 'bind-key)
 
+;; Uncomment the following to profile startup time
+;; (setq use-package-compute-statistics t)
+
 ;; Download packages automatically if not installed
 ;; NOTE: this can slow down loading of the init file, so disabled by default
 ;; (require 'use-package-ensure)
@@ -259,6 +262,7 @@ Store customizations in a separate file, instead of at the end of this file
       python-ts-mode
       sh-mode
       text-mode
+      web-mode
     ))
     (evil-set-initial-state mode 'normal))
   ;; use Emacs bindings for the following major modes
@@ -270,6 +274,7 @@ Store customizations in a separate file, instead of at the end of this file
       help-mode
       Info-mode
       org-agenda-mode
+      rg-mode
     ))
     (evil-set-initial-state mode 'emacs))
   (define-key evil-normal-state-map "\M-." nil)
@@ -356,8 +361,7 @@ To use icons in the mode line, run =M-x nerd-icons-install-fonts=
   :custom-face
   (doom-modeline-evil-insert-state ((t (:inherit font-lock-keyword-face))))
   (doom-modeline-evil-normal-state ((t (:inherit doom-modeline-info))))
-  (doom-modeline-evil-emacs-state ((t (:inherit font-lock-builtin-face))))
-)
+  (doom-modeline-evil-emacs-state ((t (:inherit font-lock-builtin-face)))))
 #+end_src
 
 ** Bibliography
@@ -388,6 +392,8 @@ Disabled for now
 *** Org citations
 #+begin_src emacs-lisp
 (use-package oc
+  :defer t
+  :after org
   :config
   (require 'oc-biblatex)
   (setq org-cite-global-bibliography cr/bib-files)
@@ -663,10 +669,10 @@ minibuffer, or for the symbol at point
 *** C
 #+begin_src emacs-lisp
 (use-package cc-mode
+  :defer t
   :bind (:map c-mode-map
-	      ("<f5>" . compile)
-	      ("C-c C-i" . insert-include-guard))
-  :pin manual)
+              ("<f5>" . compile)
+              ("C-c C-i" . insert-include-guard)))
 
 (use-package google-c-style
   :hook ((c-mode-common . google-set-c-style)
@@ -741,7 +747,8 @@ the corresponding grammars with =treesit-install-language-grammar=.
 *** Eglot
 Language server protocol (LSP) client
 #+begin_src emacs-lisp
-(use-package eglot)
+(use-package eglot
+  :defer t)
 #+end_src
 
 ** Org
@@ -877,7 +884,8 @@ Use xterm-color for eshell
 
 *** Vterm
 #+begin_src emacs-lisp
-(use-package vterm)
+(use-package vterm
+  :bind ("C-c t" . vterm))
 #+end_src
 
 ** Text processing
@@ -904,6 +912,7 @@ Make grep buffers editable
 Recursive grep in a directory
 #+begin_src emacs-lisp
 (use-package rg
+  :defer t
   :after wgrep)
 #+end_src
 
@@ -974,8 +983,9 @@ Recursive grep in a directory
 #+begin_src emacs-lisp
 (use-package magit
   :bind (("<f8>" . magit-status)
-	 ("C-x M-g" . magit-dispatch)
-	 ("C-c M-g" . magit-file-dispatch)))
+         ("C-x g" . magit-status)
+	 ("C-c g" . magit-dispatch)
+	 ("C-c f" . magit-file-dispatch)))
 #+end_src
 
 *** Highlight changed lines in gutter
@@ -1035,15 +1045,9 @@ Recursive grep in a directory
         modus-themes-mixed-fonts t
         modus-themes-scale-headings t)
 
-  (load-theme 'modus-vivendi :no-confirm)
   (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 
-(use-package zenburn-theme
-  :init
-  (setq zenburn-use-variable-pitch t)
-  (setq zenburn-scale-org-headlines t))
-
-(load-theme 'modus-vivendi-tinted t)
+(load-theme 'modus-vivendi-tinted :no-confirm)
 #+end_src
 
 ** Fonts
