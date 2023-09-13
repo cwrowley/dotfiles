@@ -733,6 +733,12 @@ minibuffer, or for the symbol at point
   )
 #+end_src
 
+*** Web pages
+#+begin_src emacs-lisp
+(use-package web-mode
+  :mode ("\\.php\\'" "\\html?\\'"))
+#+end_src
+
 *** Treesitter parsers
 In order to use the treesitter versions of these language modes, need to install
 the corresponding grammars with =treesit-install-language-grammar=.
