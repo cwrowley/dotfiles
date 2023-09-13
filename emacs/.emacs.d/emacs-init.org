@@ -43,13 +43,6 @@ From [[https://github.com/jwiegley/dot-emacs/blob/master/init.org][John Wiegley'
 (global-auto-revert-mode t)
 #+end_src
 
-** Disable custom file
-Disable custom-file by making it disposable
-
-#+begin_src emacs-lisp
-(setq custom-file (make-temp-file "emacs-custom-"))
-#+end_src
-
 ** Default major mode
 #+begin_src emacs-lisp
 (setq-default major-mode 'text-mode)
@@ -152,6 +145,23 @@ Load this before other packages, because delight provides a keyword for =use-pac
   :config
   (setq-default indent-tabs-mode nil)
 )
+#+end_src
+
+** Emacs path
+#+begin_src emacs-lisp
+(defsubst emacs-path (fname)
+  (expand-file-name fname user-emacs-directory))
+#+end_src
+
+** Custom file
+Store customizations in a separate file, instead of at the end of this file
+#+begin_src emacs-lisp
+(use-package cus-edit
+  :custom
+  (custom-file (emacs-path "settings.el"))
+  (custom-raised-buttons nil)
+  (custom-safe-themes
+   '(default)))
 #+end_src
 
 * Custom functions and macros
