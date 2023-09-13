@@ -23,7 +23,8 @@
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
 [core]
-	excludesfile = /Users/cwrowley/.gitignore_global
+	excludesfile = ~/.gitignore_global
+
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
