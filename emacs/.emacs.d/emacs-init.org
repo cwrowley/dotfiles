@@ -1062,7 +1062,13 @@ Recursive grep in a directory
 *** Ledger
 #+begin_src emacs-lisp
 (use-package ledger-mode
-  :mode "\\.ledger\\'")
+  :mode "\\.ledger\\'"
+  :config
+  (add-hook 'ledger-mode-hook
+            (lambda ()
+              (setq-local tab-always-indent 'complete)
+              (setq-local completion-cycle-threshold t)
+              (setq-local ledger-complete-in-steps t))))
 #+end_src
 
 * Fonts and themes
