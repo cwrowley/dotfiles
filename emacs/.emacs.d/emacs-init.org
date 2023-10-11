@@ -256,6 +256,7 @@ Store customizations in a separate file, instead of at the end of this file
   (dolist (mode
     '(
       bibtex-mode
+      conf-mode
       emacs-lisp-mode
       org-mode
       python-mode
@@ -719,8 +720,8 @@ minibuffer, or for the symbol at point
     :hook ((python-mode . python-isort-on-save-mode)
            (python-ts-mode . python-isort-on-save-mode))
     :config
-    (setq python-isort-arguments '("--line-length=88" "-m=3" "-tc" "-fgw=0"
-                                   "-ca" "--stdout" "--atomic" "-")))
+    (setq python-isort-arguments '("--line-length=88" "-m=3" "--tc" "--fgw=0"
+                                   "--ca" "--stdout" "--atomic" "-")))
 #+end_src
 
 *** Conda configuration
