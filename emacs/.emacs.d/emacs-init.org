@@ -801,6 +801,19 @@ Language server protocol (LSP) client
   :defer t)
 #+end_src
 
+*** Github copilot
+#+begin_src emacs-lisp
+(use-package editorconfig)
+(use-package copilot
+  :load-path "~/.emacs.d/packages/copilot"
+  :commands copilot-mode
+  :bind (:map prog-mode-map
+         ("C-c p" . copilot-mode)
+         :map copilot-completion-map
+         ("<tab>" . copilot-accept-completion-by-word)
+         ("M-<tab>" . copilot-accept-completion-by-line)
+         ("C-M-<tab>" . copilot-accept-completion)))
+#+end_src
 ** Org
 #+begin_src emacs-lisp
 (use-package org
