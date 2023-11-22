@@ -237,13 +237,15 @@ Store customizations in a separate file, instead of at the end of this file
 :END:
 #+begin_src emacs-lisp
 (bind-keys :map global-map
-  ("<f9>"  . comment-line)
-  ("<f10>" . uncomment-line)
-  ("<f12>" . bury-buffer)
-  ("s-d"   . date)
-  ("C-c n" . display-line-numbers-mode)
-  ("C-c v" . variable-pitch-mode)
-)
+           ("<f12>" . bury-buffer)
+           ("s-d"   . date)
+           ("C-c n" . display-line-numbers-mode)
+           ("C-c v" . variable-pitch-mode))
+
+(bind-keys :map prog-mode-map
+           ("<f9>"  . comment-line)
+           ("<f10>" . uncomment-line)
+           ("C-c d" . eldoc))
 #+end_src
 
 ** Evil keybindings
