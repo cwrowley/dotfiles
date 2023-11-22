@@ -1043,6 +1043,7 @@ Recursive grep in a directory
 *** CDLaTeX
 #+begin_src emacs-lisp
 (use-package cdlatex
+  :disabled
   :hook (LaTeX-mode . turn-on-cdlatex))
 #+end_src
 
