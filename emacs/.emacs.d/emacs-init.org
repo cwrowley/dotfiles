@@ -1030,7 +1030,9 @@ Recursive grep in a directory
 (use-package latex
   :ensure auctex
   ;; This local keymap binding must be done here, not in 'tex'
-  :bind (:map LaTeX-mode-map ("<f5>" . compile)))
+  :bind (:map LaTeX-mode-map
+              ("<f5>" . compile)
+              ("C-c x" . xenops-mode)))
 #+end_src
 
 *** RefTeX
@@ -1060,6 +1062,15 @@ Recursive grep in a directory
 (use-package cdlatex
   :disabled
   :hook (LaTeX-mode . turn-on-cdlatex))
+#+end_src
+
+*** Xenops
+Xenops provides inline previews of equations, tikz diagrams, and figures
+#+begin_src emacs-lisp
+(use-package xenops
+  :defer t
+  :config
+  (setq xenops-math-image-scale-factor 1.6))
 #+end_src
 
 *** Ignore generated files
