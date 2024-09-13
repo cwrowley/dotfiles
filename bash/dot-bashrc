@@ -59,6 +59,7 @@ fi
 # functions to sync files with math server
 work_dir="Work/"
 ref_dir="Reference/"
+repo_dir="repos/"
 rsync_local="$HOME/"
 rsync_remote="math.princeton.edu:"
 do_rsync () {
@@ -82,8 +83,12 @@ pushwork () { rsync_pushdir $work_dir "$@"; }
 pullwork () { rsync_pulldir $work_dir "$@"; }
 pushref  () { rsync_pushdir $ref_dir "$@"; }
 pullref  () { rsync_pulldir $ref_dir "$@"; }
-pushmath () { pushwork "$@"; pushref "$@"; }
-pullmath () { pullwork "$@"; pullref "$@"; }
+pushrepos () { rsync_pushdir $repo_dir "$@"; }
+pullrepos () { rsync_pulldir $repo_dir "$@"; }
+# pushmath () { pushwork "$@"; pushref "$@"; }
+# pullmath () { pullwork "$@"; pullref "$@"; }
+pushmath () { pushrepos "$@"; }
+pullmath () { pullrepos "$@"; }
 
 # sync course files with H drive
 push433 () {
