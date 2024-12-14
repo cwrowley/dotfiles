@@ -159,12 +159,15 @@ Load this before other packages, because delight provides a keyword for =use-pac
 ** Custom file
 Store customizations in a separate file, instead of at the end of this file
 #+begin_src emacs-lisp
-(use-package cus-edit
-  :custom
-  (custom-file (emacs-path "settings.el"))
-  (custom-raised-buttons nil)
-  (custom-safe-themes
-   '(default)))
+(setq custom-file (expand-file-name "settings.el" user-emacs-directory))
+(when (file-exists-p custom-file)
+  (load custom-file))
+;; (use-package cus-edit
+;;   :custom
+;;   (custom-file (emacs-path "settings.el"))
+;;   (custom-raised-buttons nil)
+;;   (custom-safe-themes
+;;    '(default)))
 #+end_src
 
 * Custom functions and macros
@@ -400,6 +403,7 @@ Disabled for now
 *** Org citations
 #+begin_src emacs-lisp
 (use-package oc
+  :disabled t
   :defer t
   :after org
   :config
@@ -494,10 +498,6 @@ Disabled for now
   ;; This adds thin lines, sorting and hides the mode line of the window.
   (advice-add #'register-preview :override #'consult-register-window)
 
-  ;; Use Consult to select xref locations with preview
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
-
   ;; Configure other variables and modes in the :config section,
   ;; after lazily loading the package.
   :config
@@ -509,10 +509,11 @@ Disabled for now
   ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
   ;; For some commands and buffer sources it is useful to configure the
   ;; :preview-key on a per-command basis using the `consult-customize' macro.
+
   (consult-customize
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
+   consult-bookmark consult-recent-file
    consult--source-bookmark consult--source-file-register
    consult--source-recent-file consult--source-project-recent-file
    ;; :preview-key "M-."
@@ -628,7 +629,7 @@ Configure =dired= do use simplified view
 #+end_src
 
 Guess what shell command to apply to files
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package dired-x
   :hook (dired-mode . (lambda() (dired-omit-mode 1)))
   :config
@@ -637,7 +638,7 @@ Guess what shell command to apply to files
 #+end_src
 
 List directories first
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package ls-lisp
   :custom
   (ls-lisp-dirs-first t)
@@ -927,12 +928,6 @@ Use xterm-color for eshell
 (use-package flyspell
   :hook ((text-mode . flyspell-mode)
 	 (c-mode-common . flyspell-prog-mode)))
-#+end_src
-
-*** Wgrep
-Make grep buffers editable
-#+begin_src emacs-lisp
-(require 'wgrep)
 #+end_src
 
 *** Ripgrep
