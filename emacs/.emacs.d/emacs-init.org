@@ -687,7 +687,11 @@ minibuffer, or for the symbol at point
   :hook ((c-mode-common . google-set-c-style)
 	 (c-mode-common . google-make-newline-indent)))
 #+end_src
-
+*** Faust
+#+begin_src emacs-lisp
+(use-package faust-mode
+  :mode ("\\.dsp\\'" . faust-mode))
+#+end_src
 *** Flymake
 #+begin_src emacs-lisp
 (use-package flymake
