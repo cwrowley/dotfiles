@@ -15,6 +15,10 @@ export ALTERNATE_EDITOR=vi
 
 export PYTHONSTARTUP=$HOME/.pythonstartup.py
 
+export PETSC_DIR=/Users/clancy/petsc
+export PETSC_ARCH=arch-darwin-c-opt
+export SLEPC_DIR=/Users/clancy/slepc
+
 # workaround for python -c "import numpy; import torch"
 export KMP_DUPLICATE_LIB_OK=TRUE
 
