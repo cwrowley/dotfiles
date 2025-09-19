@@ -909,6 +909,13 @@ Language server protocol (LSP) client
   :hook (org-mode . org-superstar-mode))
 #+end_src
 
+** Organ gigs
+#+begin_src emacs-lisp
+(use-package organ
+  :load-path "~/.config/emacs/lisp/organ/"
+  :config
+  (global-set-key (kbd "C-c o") 'organ-menu))
+#+end_src
 ** RSS reader
 *** Elfeed
 #+begin_src emacs-lisp
