@@ -674,6 +674,31 @@ minibuffer, or for the symbol at point
   (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 
+** GPTel
+
+#+begin_src emacs-lisp
+(use-package gptel
+  :bind
+  (("C-c RET" . gptel-send))
+  :config
+  (setq
+   gptel-default-mode #'org-mode
+   gptel-model 'gpt-4o-mini
+   gptel-backend (gptel-make-azure "AI Sandbox"
+                  :protocol "https"
+                  :host "api-ai-sandbox.princeton.edu"
+                  :endpoint "/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-03-01-preview"
+                  :stream t
+                  :key #'gptel-api-key-from-auth-source
+                  :models '(gpt-4o-mini)))
+   (gptel-make-openai "Lumiere 2"
+     :protocol "http"
+     :host "lumiere"
+     :models '(llama3.2:latest)
+     :endpoint ":3000/api/chat/completions"
+     :key #'gptel-api-key-from-auth-source))
+#+end_src
+
 ** Programming
 *** C
 #+begin_src emacs-lisp
@@ -904,7 +929,15 @@ Language server protocol (LSP) client
        ;; ("http://arxiv.org/rss/eess.SY" arxiv ee)	; systems and control
       )))
 #+end_src
-
+** Swagger
+#+begin_src emacs-lisp
+(use-package swagg
+  :config
+  (setq swagg-definitions
+        '((:name "Organ API"
+                 :json "http://localhost:8000/openapi.json"
+                 :base "http://localhost:8000"))))
+#+end_src
 ** Terminals
 *** Xterm-color
 Use xterm-color for eshell
