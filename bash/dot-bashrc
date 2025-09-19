@@ -60,6 +60,12 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]] \
 	source ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh
 fi
 
+# load API keys
+get_keys () {
+    export GEMINI_API_KEY=$(security find-generic-password -a "clancyr@gmail.com" -s GEMINI_API_KEY -w)
+    export AI_SANDBOX_KEY=$(security find-generic-password -a "cwrowley@princeton.edu" -s AI_SANDBOX_KEY -w)
+}
+
 # functions to sync files with math server
 work_dir="Work/"
 ref_dir="Reference/"
