@@ -116,9 +116,4 @@ if [ -f ~/.pyenv.sh ]; then
     source ~/.pyenv.sh
 fi
 
-# Created by `pipx` on 2025-05-19 12:12:11
-export PATH="$PATH:/Users/clancy/.local/bin"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+. "$HOME/.local/bin/env"

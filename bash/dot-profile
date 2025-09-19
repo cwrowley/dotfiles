@@ -50,3 +50,5 @@ if [ -x "$BREW" ]; then
 	eval "$($BREW shellenv)"
 fi
 
+
+. "$HOME/.local/bin/env"
