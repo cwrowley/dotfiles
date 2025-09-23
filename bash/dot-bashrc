@@ -73,7 +73,7 @@ repo_dir="repos/"
 rsync_local="$HOME/"
 rsync_remote="math.princeton.edu:"
 do_rsync () {
-    rsync -rlptvuzhe ssh --exclude='.DS_Store' --exclude="*venv" "$@"
+    rsync -rlptvuzhe ssh --exclude='.DS_Store' --exclude='__pycache__' --exclude="*venv" "$@"
 }
 rsync_pulldir () {
     syncdir=$1
