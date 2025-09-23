@@ -100,9 +100,8 @@ My custom info files are specified in INFOPATH.  Append the default ones here.
 ;; (setq use-package-compute-statistics t)
 
 ;; Download packages automatically if not installed
-;; NOTE: this can slow down loading of the init file, so disabled by default
-;; (require 'use-package-ensure)
-;; (setq use-package-always-ensure t)
+(require 'use-package-ensure)
+(setq use-package-always-ensure t)
 ;; (setq use-package-verbose t)
 #+end_src
 
@@ -620,6 +619,7 @@ Make regular Isearch interpret space as a wildcard
 Configure =dired= do use simplified view
 #+begin_src emacs-lisp
 (use-package dired
+  :ensure nil  ; dired is built-in
   :bind (:map dired-mode-map
               ("C-c C-a" . org-attach-dired-to-subtree))
   :hook ((dired-mode . dired-hide-details-mode)
@@ -912,7 +912,8 @@ Language server protocol (LSP) client
 ** Organ gigs
 #+begin_src emacs-lisp
 (use-package organ
-  :load-path "~/.config/emacs/lisp/organ/"
+  :ensure t
+  :vc (:url "git@github.com:cwrowley/organ-emacs.git" :branch "main")
   :config
   (global-set-key (kbd "C-c o") 'organ-menu))
 #+end_src
