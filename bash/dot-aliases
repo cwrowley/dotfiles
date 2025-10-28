@@ -7,7 +7,6 @@ alias rm='rm -i'
 alias rot13='tr "[a-m][n-z][A-M][N-Z]" "[n-z][a-m][N-Z][A-M]"'
 alias ssh='ssh -Y '
 alias pylab='ipython qtconsole --pylab'
-alias adroit='ssh -l cwrowley adroit.princeton.edu'
 ldap() {
     ldapsearch -LLL -x -h ldap.princeton.edu -b "o=Princeton University, c=US" "uid=$1" $2 $3 $4
 }
