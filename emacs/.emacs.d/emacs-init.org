@@ -683,20 +683,24 @@ minibuffer, or for the symbol at point
   :config
   (setq
    gptel-default-mode #'org-mode
-   gptel-model 'gpt-4o-mini
-   gptel-backend (gptel-make-azure "AI Sandbox"
-                  :protocol "https"
-                  :host "api-ai-sandbox.princeton.edu"
-                  :endpoint "/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-03-01-preview"
-                  :stream t
-                  :key #'gptel-api-key-from-auth-source
-                  :models '(gpt-4o-mini)))
-   (gptel-make-openai "Lumiere 2"
-     :protocol "http"
-     :host "lumiere"
-     :models '(llama3.2:latest)
-     :endpoint ":3000/api/chat/completions"
-     :key #'gptel-api-key-from-auth-source))
+   gptel-model 'gpt-5
+   gptel-backend (gptel-make-openai "Portkey"
+                   :protocol "https"
+                   :host "api.portkey.ai"
+                   :models '(gpt-5 gpt-4o gpt-4o-mini gpt-4-turbo gpt-35-turbo-16k)
+                   :endpoint "/v1/chat/completions"
+                   :key #'gptel-api-key-from-auth-source)
+  (gptel-make-openai "Lumiere"
+    :protocol "http"
+    :host "lumiere"
+    :models '(llama3.2:latest)
+    :endpoint ":3000/api/chat/completions"
+    :key #'gptel-api-key-from-auth-source)
+  (gptel-make-ollama "Ollama"
+    :host "localhost:11434"
+    :models '(gpt-oss:20b
+              gemma3:4b)
+    :stream t))
 #+end_src
 
 ** Programming
