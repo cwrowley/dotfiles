@@ -683,13 +683,13 @@ minibuffer, or for the symbol at point
   :config
   (setq
    gptel-default-mode #'org-mode
-   gptel-model 'gpt-5
+   gptel-model 'gemini-3-pro-preview
    gptel-backend (gptel-make-openai "Portkey"
                    :protocol "https"
                    :host "api.portkey.ai"
-                   :models '(gpt-5 gpt-4o gpt-4o-mini gpt-4-turbo gpt-35-turbo-16k)
+                   :models '(gemini-3-pro-preview gpt-5 gpt-4o gpt-4o-mini gpt-4-turbo gpt-35-turbo-16k)
                    :endpoint "/v1/chat/completions"
-                   :key #'gptel-api-key-from-auth-source)
+                   :key #'gptel-api-key-from-auth-source))
   (gptel-make-openai "Lumiere"
     :protocol "http"
     :host "lumiere"
