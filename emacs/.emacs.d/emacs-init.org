@@ -312,6 +312,18 @@ Show a menu of available key bindings, after a prefix key is entered
 #+end_src
 
 * Packages
+** 750 words
+#+begin_src emacs-lisp
+(use-package 750words
+  :load-path "~/.emacs.d/site-lisp/750words/"
+  :ensure nil
+  :commands (750words-now) ;; Defer loading until you actually run the command
+  :config
+  ;; Optional: Customize the goal here if you want
+  ;; (setq 750words-goal 1000)
+  )
+#+end_src
+
 ** Appearance
 *** Fill column indicator
 #+begin_src emacs-lisp
