@@ -10,33 +10,44 @@
 # fi
 
 export PAGER="less -R"
+export LESS="-R"
 export EDITOR=emacsclient
 export ALTERNATE_EDITOR=vi
 
-export PYTHONSTARTUP=$HOME/.pythonstartup.py
+export PYTHONSTARTUP="$HOME/.pythonstartup.py"
 
-export PETSC_DIR=/Users/clancy/petsc
+export PETSC_DIR="$HOME/petsc"
 export PETSC_ARCH=arch-darwin-c-opt
-export SLEPC_DIR=/Users/clancy/slepc
+export SLEPC_DIR="$HOME/slepc"
 
 # workaround for python -c "import numpy; import torch"
 export KMP_DUPLICATE_LIB_OK=TRUE
 
 
-if [ -f /usr/local/etc/bash_completion ]; then
+if [ -r /usr/local/etc/bash_completion ]; then
     . /usr/local/etc/bash_completion
-elif [ -f /opt/homebrew/etc/bash_completion ]; then
+elif [ -r /opt/homebrew/etc/bash_completion ]; then
     . /opt/homebrew/etc/bash_completion
 fi
 
-## set prompt
-GIT_PS1_SHOWDIRTYSTATE=true
+### set prompt
+__set_prompt() {
+    local st=$? face gitpart
 
-# PS1='\[\e[1;32m\]\h:\[\e[0;34m\] \W \!$\[\e[m\] '
-# PS1='\[\e[1m\]\h$\[\e[0m\] '
-# PS1='\[\e[1m\]\h \w\[\e[1;32m\]$(__git_ps1)\[\e[1;39m\]$\[\e[0m\] '
-# PS1="$BOLD\h $BC\W$BG\$(__git_ps1)$RESET$ "
-PS1='\[\e[1;36m\]\h \[\e[1;35m\]\W \[\e[33m\]$(if [ $? == "0" ]; then echo ":)"; else echo ":("; fi)\[\e[1;32m\]$(__git_ps1) \[\e[31m\]$ \[\e[m\]'
+    ((st == 0)) && face=":)" || face=":("
+
+    if declare -F __git_ps1 >/dev/null && git rev-parse --is-inside-work-tree &>/dev/null; then
+        gitpart="$(__git_ps1 ' (%s)')"
+    else
+        gitpart=""
+    fi
+
+    PS1="\[\e[1;36m\]\h \[\e[1;35m\]\W \[\e[33m\]${face}\[\e[1;32m\]${gitpart}\[\e[0m\] \[\e[31m\]\$ \[\e[0m\]"
+}
+
+PROMPT_COMMAND=__set_prompt
+export GIT_PS1_SHOWDIRTYSTATE=1
+export GIT_PS1_SHOWSTASHSTATE=1
 
 #eval `dircolors -b $HOME/.ls_colors`
 
@@ -49,21 +60,19 @@ shopt -s checkwinsize
 bind '"\e[A":history-search-backward'
 bind '"\e[B":history-search-forward'
 
-if [ -f ~/.aliases ]; then
-    source ~/.aliases
-fi
+[ -r ~/.aliases ] && . ~/.aliases
 
 # if inside Emacs, configure shell for vterm
 if [[ "$INSIDE_EMACS" = 'vterm' ]] \
     && [[ -n ${EMACS_VTERM_PATH} ]] \
     && [[ -f ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh ]]; then
-	source ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh
+	source "${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh"
 fi
 
 # load API keys
 get_keys () {
-    export GEMINI_API_KEY=$(security find-generic-password -a "clancyr@gmail.com" -s GEMINI_API_KEY -w)
-    export AI_SANDBOX_KEY=$(security find-generic-password -a "cwrowley@princeton.edu" -s AI_SANDBOX_KEY -w)
+    export GEMINI_API_KEY="$(security find-generic-password -a "clancyr@gmail.com" -s GEMINI_API_KEY -w)"
+    export AI_SANDBOX_KEY="$(security find-generic-password -a "cwrowley@princeton.edu" -s AI_SANDBOX_KEY -w)"
 }
 
 # functions to sync files with math server
@@ -73,20 +82,20 @@ repo_dir="repos/"
 rsync_local="$HOME/"
 rsync_remote="math.princeton.edu:"
 do_rsync () {
-    rsync -rlptvuzhe ssh --exclude='.DS_Store' --exclude='__pycache__' --exclude="*venv" "$@"
+    rsync -rlptvuzhe ssh --exclude='.DS_Store' --exclude='__pycache__' --exclude="*venv" -- "$@"
 }
 rsync_pulldir () {
     syncdir=$1
     shift
     echo "Pulling directory $syncdir from $rsync_remote"
-    do_rsync "$@" $rsync_remote$syncdir $rsync_local$syncdir
+    do_rsync "$@" "${rsync_remote}${syncdir}" "${rsync_local}${syncdir}"
     echo -e "\033[1;32mFinished pulling $syncdir $@ $(date)\033[0m"
 }
 rsync_pushdir () {
     syncdir=$1
     shift
     echo "Pushing directory $syncdir to $rsync_remote"
-    do_rsync "$@" $rsync_local$syncdir $rsync_remote$syncdir
+    do_rsync "$@" "${rsync_local}${syncdir}" "${rsync_remote}${syncdir}"
     echo -e "\033[1;32mFinished pushing $syncdir $@ $(date)\033[0m"
 }
 pushwork () { rsync_pushdir $work_dir "$@"; }
@@ -111,9 +120,7 @@ pull433 () {
 }
 
 # Python virtual environments
-if [ -f ~/.pyenv.sh ]; then
-    export VENV_HOME=~/.pyenv
+if [ -r ~/.pyenv.sh ]; then
+    export VENV_HOME="$HOME/.pyenv"
     source ~/.pyenv.sh
 fi
-
-. "$HOME/.local/bin/env"

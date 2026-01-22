@@ -3,26 +3,35 @@ alias t='less'
 alias ls='ls -CFG'
 alias lo='logout'
 alias h='history 23'
-alias rm='rm -i'
-alias rot13='tr "[a-m][n-z][A-M][N-Z]" "[n-z][a-m][N-Z][A-M]"'
-alias ssh='ssh -Y '
-alias pylab='ipython qtconsole --pylab'
-ldap() {
-    ldapsearch -LLL -x -h ldap.princeton.edu -b "o=Princeton University, c=US" "uid=$1" $2 $3 $4
-}
-# alias e='emacsclient -t'
+alias rm='rm -i --'
+alias rot13='tr A-Za-z N-ZA-Mn-za-m'
 alias ec='emacsclient'
-# alias emacs='emacsclient -n'
-# alias emacs='~/bin/emacsclient.sh'
-alias texclean='for f in *.tex; do \rm ${f%.*}.{aux,log,fdb_latexmk,fls,synctex.gz} 2> /dev/null; done'
+
+texclean() {
+    shopt -s nullglob
+    for f in *.tex; do
+        base="${f%.*}"
+        rm -f -- \
+            "$base.aux" \
+            "$base.log" \
+            "$base.fdb_latexmk" \
+            "$base.fls" \
+            "$base.synctex.gz"
+    done
+    shopt -u nullglob
+}
+
+lumiere() {
+    local session="${1:-main}"
+    ssh -t lumiere "bash -lc 'tmux new -A -s $session'"
+}
 
 ffplay() { command ffplay -hide_banner "$@"; };
 ffprobe() { command ffprobe -hide_banner "$@"; };
 ffmpeg() { command ffmpeg -hide_banner "$@"; };
 
-if [ -f ~/.aliases_local ]; then
-  source ~/.aliases_local
-fi
+# Local overrides
+[ -r ~/.aliases_local ] && . ~/.aliases_local
 
 # rsync
 # work_dir="Work/"

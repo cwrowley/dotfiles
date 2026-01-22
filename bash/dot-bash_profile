@@ -1,11 +1,14 @@
-source ~/.profile
-source ~/.bashrc
+# Load profile (sets PATH and environment variables)
+if [ -r "$HOME/.profile" ]; then
+    . "$HOME/.profile"
+fi
 
-test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+# Load bashrc for interactive shells
+if [[ $- == *i* ]] && [ -r "$HOME/.bashrc" ]; then
+    . "$HOME/.bashrc"
+fi
 
-# Setting PATH for Python 3.13
-# The original version is saved in .bash_profile.pysave
-PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:${PATH}"
-export PATH
-
-. "$HOME/.local/bin/env"
+# iTerm2 shell integration
+if [ -r "$HOME/.iterm2_shell_integration.bash" ]; then
+    . "$HOME/.iterm2_shell_integration.bash"
+fi
