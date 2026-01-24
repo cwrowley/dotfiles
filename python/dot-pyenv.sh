@@ -8,24 +8,37 @@ lsenv() {
 
 # new environment
 mkenv() {
-    local dir
-    if [ "$1" = "-g" ]; then
-        dir=$VENV_HOME
-        shift
+    local global_env=false opt OPTARG OPTIND
+    while getopts ":g" opt; do
+        case $opt in
+            g)
+                global_env=true
+                ;;
+            *)
+                echo "Usage: mkenv [-g <env_name>]"
+                return 1
+                ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    if $global_env; then
+        echo "Making new global environment $1"
+        pushd $VENV_HOME
+        uv venv --no-project "$1"
+        source "$1"/bin/activate
+        popd
     else
-        dir=.
+        if [ -z "$1" ]; then
+            echo "Making new default environment in current directory"
+            uv venv
+            source .venv/bin/activate
+        else
+            echo "Making new environment $1 in current directory"
+            uv venv "$1"
+            source "$1"/bin/activate
+        fi
     fi
-    if [ -z "$1" ]; then
-        echo "Usage: mkenv [-g] <env_name>"
-        return 1
-    fi
-    echo "Making new environment $1 in $dir"
-    pushd $dir
-    python3 -m venv "$1"
-    source "$1"/bin/activate
-    pip install --upgrade pip
-    pip install pip-tools
-    popd
 }
 
 # activate an environment
@@ -34,12 +47,12 @@ activate() {
     if [ -z "$1" ]; then
         # no arguments: use default local directory
         for dir in .venv venv; do
-            if [ -d $dir ]; then
+            if [ -d "$dir" ]; then
                 env=$dir
                 break
             fi
         done
-        if [ -z $env ]; then
+        if [ -z "$env" ]; then
             echo "Default local environment not found"
             return 1
         fi
@@ -66,4 +79,3 @@ activate() {
         return 1
     fi
 }
-
