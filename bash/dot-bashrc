@@ -32,17 +32,38 @@ fi
 
 ### set prompt
 __set_prompt() {
-    local st=$? face gitpart
+    local st=$? face gitpart venvpart
 
+    # status face
     ((st == 0)) && face=":)" || face=":("
 
+    # virtualenv / venv prefix
+    # Many activations define VIRTUAL_ENV_PROMPT (e.g. "(venv) ").
+    # If not, derive from VIRTUAL_ENV.
+    if [[ -n ${VIRTUAL_ENV-} ]]; then
+        if [[ -n ${VIRTUAL_ENV_PROMPT-} ]]; then
+            venvpart="(${VIRTUAL_ENV_PROMPT}) "
+        else
+            venvpart="($(basename "$VIRTUAL_ENV")) "
+        fi
+    else
+        venvpart=""
+    fi
+
+    # conda
+    if [[ -n ${CONDA_PROMPT_MODIFIER-} ]]; then
+        venvpart="${CONDA_PROMPT_MODIFIER}"
+    fi
+
+    # git
     if declare -F __git_ps1 >/dev/null && git rev-parse --is-inside-work-tree &>/dev/null; then
         gitpart="$(__git_ps1 ' (%s)')"
     else
         gitpart=""
     fi
 
-    PS1="\[\e[1;36m\]\h \[\e[1;35m\]\W \[\e[33m\]${face}\[\e[1;32m\]${gitpart}\[\e[0m\] \[\e[31m\]\$ \[\e[0m\]"
+    # Build PS1
+    PS1="${venvpart}\[\e[1;36m\]\h \[\e[1;35m\]\W \[\e[33m\]${face}\[\e[1;32m\]${gitpart}\[\e[0m\] \[\e[31m\]\$ \[\e[0m\]"
 }
 
 PROMPT_COMMAND=__set_prompt
