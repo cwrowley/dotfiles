@@ -15,14 +15,6 @@
 ;;; Code:
 #+end_src
 
-** Garbage collection
-Set the garbage collector threshold, to avoid collections
-#+begin_src emacs-lisp
-(setq gc-cons-percentage 0.5
-      gc-cons-threshold (* 128 1024 1024))
-
-(add-hook 'after-init-hook #'garbage-collect t)
-#+end_src
 ** Report time spent loading this file
 From [[https://github.com/jwiegley/dot-emacs/blob/master/init.org][John Wiegley's init file]]
 #+begin_src emacs-lisp
@@ -50,13 +42,6 @@ From [[https://github.com/jwiegley/dot-emacs/blob/master/init.org][John Wiegley'
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 #+end_src
 
-** Set path
-#+begin_src emacs-lisp
-(add-to-list 'exec-path "/Library/TeX/texbin")
-(add-to-list 'exec-path "/usr/local/bin")
-(setenv "PATH" (concat "/Library/TeX/texbin:/usr/local/bin:" (getenv "PATH")))
-#+end_src
-
 ** Set default fill column and window size
 #+begin_src emacs-lisp
 (setq-default fill-column 80)
@@ -80,23 +65,30 @@ From [[https://github.com/jwiegley/dot-emacs/blob/master/init.org][John Wiegley'
 #+begin_src emacs-lisp
 ;;;; ELPA packages
 (require 'package)
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/") t)
+(setq package-archives
+      '(("gnu"   . "https://elpa.gnu.org/packages/")
+        ("melpa" . "https://melpa.org/packages/")))
+(unless package--initialized
+  (package-initialize))
 #+end_src
 
 *** Use-package
 #+begin_src emacs-lisp
 (message "Loading packages...")
-(eval-when-compile
-  (require 'use-package))
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(eval-when-compile (require 'use-package))
+(setq use-package-always-ensure t)
 (require 'bind-key)
 
 ;; Uncomment the following to profile startup time
 ;; (setq use-package-compute-statistics t)
 
 ;; Download packages automatically if not installed
-(require 'use-package-ensure)
-(setq use-package-always-ensure t)
+;; (require 'use-package-ensure)
+;; (setq use-package-always-ensure t)
 ;; (setq use-package-verbose t)
 #+end_src
 
@@ -129,8 +121,6 @@ Load this before other packages, because delight provides a keyword for =use-pac
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message "")
-  (scroll-bar-mode nil)
-  (tool-bar-mode nil)
 
   ;; files.el
   (make-backup-files t)
@@ -167,31 +157,20 @@ Store customizations in a separate file, instead of at the end of this file
 * Custom functions and macros
 ** Include guards
 #+begin_src emacs-lisp
-(defun replace-in-string (string regexp newtext)
-  "Replace regular expression REGEXP with NEWTEXT in the given STRING."
-  (let ((skip (length newtext))
-        (start 0))
-    (while (string-match regexp string start)
-      (setq string (replace-match newtext t t string)
-            start (+ skip (match-beginning 0)))))
-  string)
+(defun cr-include-guard-name ()
+  (let* ((base (file-name-nondirectory (or (buffer-file-name) (buffer-name))))
+         (up (upcase base)))
+    (replace-regexp-in-string "[^A-Z0-9]" "_" up)))
 
 (defun insert-include-guard ()
   "Insert an #ifdef include guard in a C header file."
   (interactive)
-  (goto-char 1)
-  (let* ((inc-name (replace-in-string (buffer-name (current-buffer)) "\\." "_" ) )
-         (ftag (concat "" (upcase inc-name ) "" )))
-    (insert (concat "#ifndef " ftag))
-    (newline)
-    (insert (concat "#define " ftag))
-    (newline)
-    (newline)
-    (goto-char (point-max))
-    (insert "#endif")
-    (newline)
-    )
-  )
+  (let ((tag (cr-include-guard-name)))
+    (save-excursion
+      (goto-char (point-min))
+      (insert "#ifndef " tag "\n#define " tag "\n\n")
+      (goto-char (point-max))
+      (insert "\n#endif /* " tag " */\n"))))
 #+end_src
 
 ** Comments
@@ -254,6 +233,7 @@ Store customizations in a separate file, instead of at the end of this file
   ;; use vi bindings (Normal mode) only for the following major modes
   (dolist (mode
     '(
+      bash-ts-mode
       bibtex-mode
       c-mode
       c-ts-mode
@@ -283,7 +263,8 @@ Store customizations in a separate file, instead of at the end of this file
     ))
     (evil-set-initial-state mode 'emacs))
   (define-key evil-normal-state-map "\M-." nil)
-  (define-key evil-normal-state-map (kbd "C-.") nil)
+  ;; (define-key evil-normal-state-map (kbd "C-.") nil)
+  (define-key evil-normal-state-map (kbd "C-.") #'embark-act)
   (evil-mode 1))
 
 (use-package evil-surround
@@ -321,12 +302,8 @@ Show a menu of available key bindings, after a prefix key is entered
 ** Appearance
 *** Fill column indicator
 #+begin_src emacs-lisp
-(use-package fill-column-indicator
-  :hook ((c-mode-common . fci-mode)
-	 (python-mode . fci-mode))
-  ;; :config
-  ;; (setq fci-rule-color (face-attribute font-lock-comment-face :foreground))
-  )
+(setq-default display-fill-column-indicator-column 80)
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 #+end_src
 
 *** Pulsar
@@ -334,14 +311,16 @@ The variable =pulsar-pulse-functions= lets you add more functions that should
 cause a pulse after they're invoked.
 #+begin_src emacs-lisp
 (use-package pulsar
+  :init
+  (pulsar-global-mode 1)
   :config
   (add-hook 'next-error-hook #'pulsar-pulse-line)
-  (add-hook 'consult-after-jump-hook #'pulsar-recenter-middle)
-  (add-hook 'consult-after-jump-hook #'pulsar-reveal-entry)
-  (add-hook 'imenu-after-jump-hook #'pulsar-recenter-middle)
-  (add-hook 'imenu-after-jump-hook #'pulsar-reveal-entry)
-  :init
-  (pulsar-global-mode t))
+  (with-eval-after-load 'consult
+    (add-hook 'consult-after-jump-hook #'pulsar-recenter-middle)
+    (add-hook 'consult-after-jump-hook #'pulsar-reveal-entry))
+  (with-eval-after-load 'imenu
+    (add-hook 'imenu-after-jump-hook #'pulsar-recenter-middle)
+    (add-hook 'imenu-after-jump-hook #'pulsar-reveal-entry)))
 #+end_src
 
 *** Rainbow delimiters
@@ -431,6 +410,14 @@ Disabled for now
 #+end_src
 
 ** Completion
+*** Cape
+#+begin_src emacs-lisp
+(use-package cape
+  :init
+  ;; Add useful capfs
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
+#+end_src
 *** Consult
 #+begin_src emacs-lisp
 ;; Example configuration for Consult
@@ -529,6 +516,11 @@ Disabled for now
   ;; Both < and C-+ work reasonably well.
   (setq consult-narrow-key "<") ;; "C-+"
 )
+
+(use-package consult-dir
+  :bind (("C-x C-d" . consult-dir)
+         :map vertico-map
+         ("C-x C-d" . consult-dir)))
 #+end_src
 
 *** Corfu
@@ -683,7 +675,10 @@ minibuffer, or for the symbol at point
 
 ** Get INFOPATH from shell
 #+begin_src emacs-lisp
+(require 'subr-x)  ; needed for string-empty-p
 (use-package exec-path-from-shell
+  :init
+  (setq exec-path-from-shell-variables '("PATH" "MANPATH" "INFOPATH"))
   :config
   (exec-path-from-shell-initialize)
   (when (daemonp)
@@ -724,7 +719,13 @@ minibuffer, or for the symbol at point
               gemma3:4b)
     :stream t))
 #+end_src
-
+** Helpful
+#+begin_src emacs-lisp
+(use-package helpful
+  :bind (("C-h f" . helpful-callable)
+         ("C-h v" . helpful-variable)
+         ("C-h k" . helpful-key)))
+#+end_src
 ** Programming
 *** C
 #+begin_src emacs-lisp
@@ -773,7 +774,7 @@ minibuffer, or for the symbol at point
 *** Python
 #+begin_src emacs-lisp
 (use-package python
-  :bind (:map python-mode-map
+  :bind (:map python-base-mode-map
 	      ("<f11>" . numpydoc-generate)))
 
 (use-package numpydoc
@@ -800,7 +801,7 @@ minibuffer, or for the symbol at point
 *** Web pages
 #+begin_src emacs-lisp
 (use-package web-mode
-  :mode ("\\.php\\'" "\\html?\\'"))
+  :mode ("\\.php\\'" "\\.html?\\'"))
 #+end_src
 
 *** Treesitter parsers
@@ -862,7 +863,9 @@ Language server protocol (LSP) client
   (setq org-hide-leading-stars t)
 
   ;; follow links to email messages
-  (org-add-link-type "message" 'cr-open-message-link)
+  (org-link-set-parameters
+   "message"
+   :follow (lambda (id) (cr-open-message-link id)))
 
   ;; Enable external applications to send stuff to org
   (require 'org-protocol)
@@ -909,8 +912,8 @@ Language server protocol (LSP) client
                      (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))))))
           ("d" "Tasks without a date"
            ((alltodo ""
-                       ((org-agenda-overriding-header "Tasks without a date\n")
-                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'deadline))))))
+                     ((org-agenda-overriding-header "Tasks without a date\n")
+                      (org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'deadline))))))
           ("e" "Emails"
            ((tags-todo "email")))
           ("h" "Tasks @home"
@@ -978,7 +981,13 @@ Use xterm-color for eshell
 #+begin_src emacs-lisp
 (use-package xterm-color
   :hook (eshell-mode . (lambda ()
-			 (setenv "TERM" "xterm-256color"))))
+                         (setenv "TERM" "xterm-256color")
+                         (setq-local eshell-preoutput-filter-functions
+                                     (cons #'xterm-color-filter
+                                           eshell-preoutput-filter-functions))
+                         (setq-local eshell-output-filter-functions
+                                     (remove 'eshell-handle-ansi-color
+                                             eshell-output-filter-functions)))))
 #+end_src
 
 *** Vterm
@@ -1005,8 +1014,7 @@ Use xterm-color for eshell
 Recursive grep in a directory
 #+begin_src emacs-lisp
 (use-package rg
-  :defer t
-  :after wgrep)
+  :defer t)
 #+end_src
 
 *** Snippets
@@ -1074,8 +1082,8 @@ Recursive grep in a directory
   (setq reftex-plug-into-AUCTeX t)
   (setq reftex-use-external-file-finders t)
   (setq reftex-external-file-finders
-	'(("tex" . "kpsewhich -format=.tex %f")
-	  ("bib" . "kpsewhich -format=.bib %f")))
+	'(("tex" . "kpsewhich -format=tex %f")
+	  ("bib" . "kpsewhich -format=bib %f")))
   (setq reftex-ref-macro-prompt nil)  ; do not prompt for ref/pageref
   ;; Define index macros
   (setq reftex-index-macros
@@ -1191,15 +1199,25 @@ Xenops provides inline previews of equations, tikz diagrams, and figures
 
 ** Fonts
 #+begin_src emacs-lisp
-(add-hook 'window-setup-hook
-          (lambda ()
-            (set-face-attribute 'default nil :family "Hack" :height 140)
-            (set-face-attribute 'fixed-pitch nil :family "Hack" :height 140)
-            (set-face-attribute 'variable-pitch nil :family "Fira Sans" :height 160)
-            (add-to-list 'default-frame-alist '(alpha-background . 80))))
+(defun cr-setup-frame (frame)
+  "Apply UI and font settings to FRAME."
+  (with-selected-frame frame
+    (when (display-graphic-p frame)
+      (set-face-attribute 'default frame :family "Hack" :height 140)
+      (set-face-attribute 'fixed-pitch frame :family "Hack" :height 140)
+      (set-face-attribute 'variable-pitch frame :family "Fira Sans" :height 160)
+      (set-frame-parameter frame 'alpha-background 90))))
+
+(add-hook 'after-make-frame-functions #'cr-setup-frame)
+
+;; Also apply immediately for non-daemon or first frame:
+(when (display-graphic-p)
+  (cr-setup-frame (selected-frame)))
 #+end_src
 
 * Tidy up and start server
 #+begin_src emacs-lisp
-;; (server-start)
+(require 'server)
+(unless (server-running-p)
+  (server-start))
 #+end_src
