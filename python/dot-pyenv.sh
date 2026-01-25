@@ -224,6 +224,9 @@ _activate_completion() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
+    # tell readline to escape spaces in completions
+    compopt -o filenames 2>/dev/null
+
     # Complete option flags at position 1
     if (( COMP_CWORD == 1 )); then
         COMPREPLY=($(compgen -W "-g" -- "$cur"))
@@ -236,6 +239,9 @@ _activate_completion() {
     if [[ "$prev" == "-g" ]]; then
         local globals
         globals="$(_venv_list_globals 2>/dev/null)"
+
+        # split the wordlist on newlines, not spaces
+        local IFS=$'\n'
         COMPREPLY=($(compgen -W "$globals" -- "$cur"))
         return 0
     fi
@@ -293,4 +299,3 @@ _rmenv_completion() {
 complete -F _activate_completion activate
 complete -F _mkenv_completion mkenv
 complete -F _rmenv_completion rmenv
-
