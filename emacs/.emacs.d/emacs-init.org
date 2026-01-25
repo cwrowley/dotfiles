@@ -75,12 +75,6 @@ From [[https://github.com/jwiegley/dot-emacs/blob/master/init.org][John Wiegley'
 #+begin_src emacs-lisp
 (put 'narrow-to-region 'disabled nil)
 #+end_src
-** Custom info files
-My custom info files are specified in INFOPATH.  Append the default ones here.
-#+begin_src emacs-lisp
-(setq Info-additional-directory-list Info-default-directory-list)
-#+end_src
-
 ** Set up package manager
 *** Package
 #+begin_src emacs-lisp
@@ -687,6 +681,21 @@ minibuffer, or for the symbol at point
   (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 
+** Get INFOPATH from shell
+#+begin_src emacs-lisp
+(use-package exec-path-from-shell
+  :config
+  (exec-path-from-shell-initialize)
+  (when (daemonp)
+    (exec-path-from-shell-copy-env "INFOPATH"))
+
+  ;; Now sync Info-directory-list from INFOPATH:
+  (let ((infopath (getenv "INFOPATH")))
+    (when (and infopath (not (string-empty-p infopath)))
+      (dolist (dir (split-string infopath ":" t))
+        (when (file-directory-p dir)
+          (add-to-list 'Info-directory-list dir))))))
+#+end_src
 ** GPTel
 
 #+begin_src emacs-lisp

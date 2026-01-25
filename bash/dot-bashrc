@@ -145,3 +145,13 @@ if [ -r ~/.pyenv.sh ]; then
     export VENV_HOME="$HOME/.pyenv"
     source ~/.pyenv.sh
 fi
+
+# Use emacs for info
+info() {
+    if [[ -n "$1" ]]; then
+        emacsclient -e "(info \"$1\")" >/dev/null
+    else
+        emacsclient -e "(info)" >/dev/null
+    fi
+}
+

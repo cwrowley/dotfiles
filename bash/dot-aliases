@@ -3,7 +3,7 @@ alias t='less'
 alias ls='ls -CFG'
 alias lo='logout'
 alias h='history 23'
-alias rm='rm -i --'
+alias del='rm -i --'
 alias rot13='tr A-Za-z N-ZA-Mn-za-m'
 alias ec='emacsclient'
 
