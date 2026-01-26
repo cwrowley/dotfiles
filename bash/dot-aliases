@@ -26,6 +26,10 @@ lumiere() {
     ssh -t lumiere "bash -lc 'tmux new -A -s $session'"
 }
 
+plex() {
+    ssh -t plex@lumiere "bash -lc 'tmux new -A -s plex'"
+}
+
 ffplay() { command ffplay -hide_banner "$@"; };
 ffprobe() { command ffprobe -hide_banner "$@"; };
 ffmpeg() { command ffmpeg -hide_banner "$@"; };
