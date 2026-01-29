@@ -6,6 +6,7 @@ alias h='history 23'
 alias del='rm -i --'
 alias rot13='tr A-Za-z N-ZA-Mn-za-m'
 alias ec='emacsclient'
+alias ta='tmux attach -t'
 
 texclean() {
     shopt -s nullglob
