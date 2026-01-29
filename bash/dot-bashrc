@@ -77,10 +77,6 @@ set -o noclobber
 # make bash check its window size afer a process completes
 shopt -s checkwinsize
 
-# up/down arrow keys do history lookup
-bind '"\e[A":history-search-backward'
-bind '"\e[B":history-search-forward'
-
 [ -r ~/.aliases ] && . ~/.aliases
 
 # if inside Emacs, configure shell for vterm

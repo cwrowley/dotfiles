@@ -1,0 +1,3 @@
+# up/down arrow keys do history lookup
+"\e[A":history-search-backward
+"\e[B":history-search-forward
