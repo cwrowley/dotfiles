@@ -228,6 +228,8 @@ Store customizations in a separate file, instead of at the end of this file
 ** Evil keybindings
 #+begin_src emacs-lisp
 (use-package evil
+  :init
+  (setq evil-want-C-i-jump nil)
   :config
   ;; by default, use Emacs bindings
   (setq evil-default-state 'emacs)
@@ -416,6 +418,7 @@ Disabled for now
 (use-package cape
   :init
   ;; Add useful capfs
+  (add-to-list 'completion-at-point-functions #'cape-tex)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 #+end_src
@@ -843,12 +846,14 @@ Language server protocol (LSP) client
 ** Org
 #+begin_src emacs-lisp
 (use-package org
+  :after evil
   :defer t
   :bind (("C-c l" . org-store-link)
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture)
          ("C-c d" . org-time-stamp-inactive))
   :config
+  (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
   (setq org-agenda-files '("~/org/todo.org" "~/org/inbox.org" "~/gd/Reviews/reviews.org"))
   (setq org-default-notes-file "~/org/todo.org")
   (setq org-refile-targets '((nil . (:level . 1))
