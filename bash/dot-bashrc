@@ -79,6 +79,20 @@ shopt -s checkwinsize
 
 [ -r ~/.aliases ] && . ~/.aliases
 
+texclean() {
+    shopt -s nullglob
+    for f in *.tex; do
+        base="${f%.*}"
+        rm -f -- \
+            "$base.aux" \
+            "$base.log" \
+            "$base.fdb_latexmk" \
+            "$base.fls" \
+            "$base.synctex.gz"
+    done
+    shopt -u nullglob
+}
+
 # if inside Emacs, configure shell for vterm
 if [[ "$INSIDE_EMACS" = 'vterm' ]] \
     && [[ -n ${EMACS_VTERM_PATH} ]] \

@@ -1,0 +1,24 @@
+#compdef activate
+
+source ~/.zsh/lib/venv.zsh
+
+_activate() {
+  local -a globals
+  _venv_globals_array
+  globals=("${reply[@]}")
+
+  _arguments -C \
+    '-g[activate global environment]:global env:->global' \
+    '1:environment:->env' && return 0
+
+  case $state in
+    (global)
+      compadd -a globals
+      ;;
+    (env)
+      # Suggest the common local env dirs first, then directories
+      compadd .venv venv
+      _files -/    # directories only
+      ;;
+  esac
+}

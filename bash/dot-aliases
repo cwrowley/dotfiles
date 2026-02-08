@@ -1,6 +1,6 @@
 alias t='less'
-#alias ls='ls -CF --color=auto'
-alias ls='ls -CFG'
+alias ls='gls -CF --color=auto'
+#alias ls='ls -CFG'
 alias lo='logout'
 alias h='history 23'
 alias del='rm -i --'
@@ -9,20 +9,6 @@ alias ec='emacsclient'
 alias ta='tmux attach'
 alias tn='tmux new'
 alias tl='tmux ls'
-
-texclean() {
-    shopt -s nullglob
-    for f in *.tex; do
-        base="${f%.*}"
-        rm -f -- \
-            "$base.aux" \
-            "$base.log" \
-            "$base.fdb_latexmk" \
-            "$base.fls" \
-            "$base.synctex.gz"
-    done
-    shopt -u nullglob
-}
 
 lumiere() {
     local session="${1:-main}"

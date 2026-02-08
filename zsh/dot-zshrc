@@ -1,0 +1,52 @@
+source ~/.zsh/env.zsh
+source ~/.zsh/aliases.zsh
+source ~/.zsh/functions.zsh
+source ~/.zsh/venv-tools.zsh
+
+# completion
+fpath=($HOME/.zsh/completions $fpath)
+autoload -Uz compinit
+compinit
+
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+eval "$(gdircolors)"
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+# convenient renaming
+# e.g., zmv '*.txt' '*.org'
+autoload -Uz zmv
+
+# history
+setopt share_history
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt inc_append_history
+
+bindkey '^[[A' history-beginning-search-backward
+bindkey '^[[B' history-beginning-search-forward
+
+# correction
+setopt correct
+
+# globbing
+setopt extendedglob
+
+# better help
+unalias run-help 2>/dev/null
+autoload -Uz run-help
+alias help=run-help
+
+source ~/.zsh/prompt.zsh
+
+set -o noclobber
+
+# if inside Emacs, configure shell for vterm
+if [[ "$INSIDE_EMACS" = 'vterm' ]] \
+    && [[ -n ${EMACS_VTERM_PATH} ]] \
+    && [[ -f ${EMACS_VTERM_PATH}/etc/emacs-vterm-zsh.sh ]]; then
+	source "${EMACS_VTERM_PATH}/etc/emacs-vterm-zsh.sh"
+fi
+
+

@@ -1,0 +1,26 @@
+#compdef rmenv
+
+_rmenv() {
+  local -a globals
+  _venv_globals_array
+  globals=("${reply[@]}")
+
+  _arguments -C \
+    '-g[remove global environment]:global env:->global' \
+    '-f[force removal (no prompt)]' \
+    '1:target:->target' && return 0
+
+  case $state in
+    (global)
+      compadd -a globals
+      ;;
+    (target)
+      # If -g was provided anywhere, complete globals; else directories
+      if (( ${+opt_args[-g]} )); then
+        compadd -a globals
+      else
+        _files -/
+      fi
+      ;;
+  esac
+}
