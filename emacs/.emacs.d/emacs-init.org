@@ -1203,25 +1203,37 @@ Xenops provides inline previews of equations, tikz diagrams, and figures
 
   (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 
-(load-theme 'modus-vivendi :no-confirm)
 #+end_src
 
 ** Fonts
 #+begin_src emacs-lisp
-(defun cr-setup-frame (frame)
+(require 'modus-themes)
+
+(defun cr-setup-frame (&optional frame)
   "Apply UI and font settings to FRAME."
-  (with-selected-frame frame
-    (when (display-graphic-p frame)
-      (set-face-attribute 'default frame :family "Hack" :height 140)
-      (set-face-attribute 'fixed-pitch frame :family "Hack" :height 140)
-      (set-face-attribute 'variable-pitch frame :family "Fira Sans" :height 140)
-      (set-frame-parameter frame 'alpha-background 90))))
+  (let ((f (or frame (selected-frame))))
+    (with-selected-frame f
+      (let ((my-theme (if (display-graphic-p)
+                          'modus-vivendi-tinted  ;; theme for GUI window
+                        'modus-vivendi)))        ;; theme for terminal
+        (unless (memq my-theme custom-enabled-themes)
+          (dolist (th '(modus-vivendi modus-vivendi-tinted))
+            (when (memq th custom-enabled-themes)
+              (disable-theme th)))
+          (load-theme my-theme t)))
+      (menu-bar-mode -1)
+      (tool-bar-mode -1)
+      (scroll-bar-mode -1)
+      (when (display-graphic-p)
+        (set-face-attribute 'default frame :family "Hack" :height 140)
+        (set-face-attribute 'fixed-pitch frame :family "Hack" :height 140)
+        (set-face-attribute 'variable-pitch frame :family "Fira Sans" :height 140)
+        (set-frame-parameter frame 'alpha-background 90)))))
 
 (add-hook 'after-make-frame-functions #'cr-setup-frame)
 
-;; Also apply immediately for non-daemon or first frame:
-(when (display-graphic-p)
-  (cr-setup-frame (selected-frame)))
+;; Also apply immediately to the current frame
+(cr-setup-frame (selected-frame))
 #+end_src
 
 * Tidy up and start server
