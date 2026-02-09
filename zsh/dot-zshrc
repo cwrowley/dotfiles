@@ -1,13 +1,12 @@
-source ~/.zsh/env.zsh
-source ~/.zsh/aliases.zsh
-source ~/.zsh/functions.zsh
-source ~/.zsh/venv-tools.zsh
-
 # completion
 fpath=($HOME/.zsh/completions $fpath)
 autoload -Uz compinit
 compinit
 
+source ~/.zsh/env.zsh
+source ~/.zsh/aliases.zsh
+source ~/.zsh/functions.zsh
+source ~/.zsh/venv-tools.zsh
 
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
