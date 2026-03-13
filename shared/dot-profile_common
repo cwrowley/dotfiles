@@ -1,0 +1,59 @@
+# Shared login-shell configuration for bash and zsh.
+# Source from ~/.profile (bash) and ~/.zprofile (zsh).
+#
+# In zsh, set before sourcing:
+#   typeset -U path manpath infopath      # keep arrays duplicate-free
+#   typeset -aT INFOPATH infopath         # tie INFOPATH to infopath array
+
+# Homebrew (shellenv auto-detects the calling shell)
+BREW="/opt/homebrew/bin/brew"
+[ -x "$BREW" ] && eval "$($BREW shellenv)"
+
+# Prepend a directory to PATH/MANPATH/INFOPATH, if it exists and isn't already present.
+_prepend_path() {
+    [ -d "$1" ] || return 0
+    case ":$PATH:" in *":$1:"*) ;; *) PATH="$1${PATH:+:$PATH}" ;; esac
+}
+_prepend_manpath() {
+    [ -d "$1" ] || return 0
+    case ":$MANPATH:" in *":$1:"*) ;; *) MANPATH="$1${MANPATH:+:$MANPATH}" ;; esac
+}
+_prepend_infopath() {
+    [ -d "$1" ] || return 0
+    case ":$INFOPATH:" in *":$1:"*) ;; *) INFOPATH="$1${INFOPATH:+:$INFOPATH}" ;; esac
+}
+
+# PATH (highest priority last)
+for _d in \
+    "/Applications/Emacs.app/Contents/MacOS/bin" \
+    "/Library/Frameworks/Python.framework/Versions/3.13/bin" \
+    "/Library/Frameworks/Python.framework/Versions/3.14/bin" \
+    "$HOME/bin" \
+    "$HOME/.local/bin"
+do
+    _prepend_path "$_d"
+done
+export PATH
+
+# MANPATH
+for _d in "/opt/local/man" "/usr/local/man" "/usr/local/mysql/man" "$HOME/man"; do
+    _prepend_manpath "$_d"
+done
+export MANPATH
+
+# INFOPATH
+_prepend_infopath "$HOME/.local/share/info"
+export INFOPATH
+
+unset -f _prepend_path _prepend_manpath _prepend_infopath
+unset _d
+
+# DaisyDSP and HotHouse libraries
+export LIBDAISY_DIR="$HOME/repos/coding-sound/DaisyExamples/libDaisy"
+export DAISYSP_DIR="$HOME/repos/coding-sound/DaisyExamples/DaisySP"
+export HOTHOUSE_DIR="$HOME/repos/coding-sound/HothouseExamples"
+
+# Locale and behavior settings
+export LC_CTYPE=en_US.UTF-8
+export COPYFILE_DISABLE=true
+export BASH_SILENCE_DEPRECATION_WARNING=1
