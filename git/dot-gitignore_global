@@ -21,3 +21,5 @@ coverage.json
 *.spl
 
 .vscode/
+.claude/
+.cache/

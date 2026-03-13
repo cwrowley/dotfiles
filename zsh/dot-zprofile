@@ -1,1 +1,54 @@
-[[ -r ~/.profile ]] && source ~/.profile
+# Homebrew environment
+BREW="/opt/homebrew/bin/brew"
+if [ -x "$BREW" ]; then
+  eval "$($BREW shellenv zsh)"
+fi
+
+#
+# PATH customization
+#
+
+# Add a directory to array, if it exists
+# Note: zsh already removes duplicates automatically
+zprepend() {
+  local arrname=$1
+  shift
+  typeset -n arr=$arrname
+  local d
+  for d in "$@"; do
+    [[ -d $d ]] && arr=("$d" $arr)
+  done
+}
+
+# Directories to add (highest priority last)
+for d in "/Applications/Emacs.app/Contents/MacOS/bin" \
+           "/Library/Frameworks/Python.framework/Versions/3.13/bin" \
+           "/Library/Frameworks/Python.framework/Versions/3.14/bin" \
+           "$HOME/bin" \
+           "$HOME/.local/bin"
+do
+  path=("$d"(-/N) $path)
+done
+
+# manpath
+for d in "/opt/local/man" \
+           "/usr/local/man" \
+           "/usr/local/mysql/man" \
+           "$HOME/man"
+do
+  manpath=("$d"(-/N) $manpath)
+done
+
+# infopath
+typeset -aT INFOPATH infopath
+infopath=("$HOME/.local/share/info"(-/N) $infopath)
+
+# DaisyDSP and HotHouse libraries
+export LIBDAISY_DIR="$HOME/repos/coding-sound/DaisyExamples/libDaisy"
+export DAISYSP_DIR="$HOME/repos/coding-sound/DaisyExamples/DaisySP"
+export HOTHOUSE_DIR="$HOME/repos/coding-sound/HothouseExamples"
+
+# Locale and behavior settings
+export LC_CTYPE=en_US.UTF-8
+export COPYFILE_DISABLE=true
+export BASH_SILENCE_DEPRECATION_WARNING=1

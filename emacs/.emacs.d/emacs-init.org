@@ -132,6 +132,7 @@ Load this before other packages, because delight provides a keyword for =use-pac
 
   :config
   (setq-default indent-tabs-mode nil)
+  (xterm-mouse-mode 1)
 )
 #+end_src
 
@@ -1195,13 +1196,13 @@ Xenops provides inline previews of equations, tikz diagrams, and figures
 
 (use-package modus-themes
   :ensure t
-  :config
+  :init
   (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs nil
         modus-themes-mixed-fonts t
         modus-themes-scale-headings t)
-
-  (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
+  :config
+  (load-theme 'modus-vivendi-tinted t))
 
 #+end_src
 
@@ -1213,17 +1214,10 @@ Xenops provides inline previews of equations, tikz diagrams, and figures
   "Apply UI and font settings to FRAME."
   (let ((f (or frame (selected-frame))))
     (with-selected-frame f
-      (let ((my-theme (if (display-graphic-p)
-                          'modus-vivendi-tinted  ;; theme for GUI window
-                        'modus-vivendi)))        ;; theme for terminal
-        (unless (memq my-theme custom-enabled-themes)
-          (dolist (th '(modus-vivendi modus-vivendi-tinted))
-            (when (memq th custom-enabled-themes)
-              (disable-theme th)))
-          (load-theme my-theme t)))
       (menu-bar-mode -1)
       (tool-bar-mode -1)
       (scroll-bar-mode -1)
+      ;; GUI-only font and transparency
       (when (display-graphic-p)
         (set-face-attribute 'default frame :family "Hack" :height 140)
         (set-face-attribute 'fixed-pitch frame :family "Hack" :height 140)
@@ -1232,8 +1226,9 @@ Xenops provides inline previews of equations, tikz diagrams, and figures
 
 (add-hook 'after-make-frame-functions #'cr-setup-frame)
 
-;; Also apply immediately to the current frame
-(cr-setup-frame (selected-frame))
+;; Also apply immediately to the current/initial frame (non-daemon)
+(unless (daemonp)
+  (cr-setup-frame))
 #+end_src
 
 * Tidy up and start server

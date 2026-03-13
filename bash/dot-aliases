@@ -10,6 +10,38 @@ alias ta='tmux attach'
 alias tn='tmux new'
 alias tl='tmux ls'
 
+tw() {
+  local session="$1"
+  # Pick the first session if none provided
+  if [[ -z "$session" ]]; then
+    session="$(tmux list-sessions -F '#S' 2>/dev/null | head -n1)"
+  fi
+  if [[ -z "$session" ]]; then
+    echo "No tmux sessions found." >&2
+    return 1
+  fi
+
+  # Create a new window in that session at the current dir; capture its ID
+  local win_id
+  win_id="$(tmux new-window -t "$session" -c "$PWD" -P -F "#{window_id}")" || return $?
+
+  # If we're already inside tmux, switch the client; otherwise attach
+  if [[ -n "$TMUX" ]]; then
+    tmux switch-client -t "$session" \; select-window -t "$win_id"
+  else
+    tmux attach -t "$session" \; select-window -t "$win_id"
+  fi
+}
+
+emacsd() {
+  local sock="${TMPDIR%/}/emacs$(id -u)/server"
+  if [[ ! -S "$sock" ]]; then
+    emacs --daemon
+  else
+    echo "Emacs daemon already running (socket: $sock)"
+  fi
+}
+
 lumiere() {
     local session="${1:-main}"
     ssh -t lumiere "bash -lc 'tmux new -A -s $session'"

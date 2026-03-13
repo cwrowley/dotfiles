@@ -1,0 +1,12 @@
+#compdef tw
+
+_tw() {
+  local -a sessions
+  # Collect session names (one per line); suppress errors if no server
+  sessions=( ${(f)"$(tmux list-sessions -F '#S' 2>/dev/null)"} )
+  if (( CURRENT == 2 )); then
+    compadd -- $sessions
+  else
+    compadd
+  fi
+}
