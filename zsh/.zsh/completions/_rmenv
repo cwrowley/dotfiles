@@ -1,11 +1,9 @@
 #compdef rmenv
 
-source ~/.zsh/lib/venv.zsh
-
 _rmenv() {
   local -a globals
-  _venv_globals_array
-  globals=("${reply[@]}")
+  : "${VENV_HOME:=$HOME/.pyenv}"
+  globals=( "$VENV_HOME"/*(/N:t) )
 
   _arguments -C \
     '-g[remove global environment]:global env:->global' \

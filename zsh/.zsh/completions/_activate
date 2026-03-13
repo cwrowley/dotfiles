@@ -1,11 +1,9 @@
 #compdef activate
 
-source ~/.zsh/lib/venv.zsh
-
 _activate() {
   local -a globals
-  _venv_globals_array
-  globals=("${reply[@]}")
+  : "${VENV_HOME:=$HOME/.pyenv}"
+  globals=( "$VENV_HOME"/*(/N:t) )
 
   _arguments -C \
     '-g[activate global environment]:global env:->global' \

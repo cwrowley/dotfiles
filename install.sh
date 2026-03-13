@@ -4,6 +4,6 @@ dirs="bash conda emacs git python shared tex tmux zsh"
 
 pushd emacs/.emacs.d && make && popd
 [ ! -d ../.emacs.d ] && mkdir ../.emacs.d
-mkdir -p ~/.zsh/{completions,lib}
+mkdir -p ~/.zsh/completions
 stow --dotfiles --ignore=NO --ignore=Makefile $dirs
 
