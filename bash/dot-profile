@@ -1,1 +1,0 @@
-[ -r ~/.profile_common ] && . ~/.profile_common

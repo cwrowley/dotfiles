@@ -3,4 +3,4 @@ typeset -U path manpath infopath
 # Tie INFOPATH to the infopath array (not automatic in zsh, unlike PATH/MANPATH)
 typeset -aT INFOPATH infopath
 
-[ -r ~/.profile_common ] && source ~/.profile_common
+[ -r ~/.profile ] && source ~/.profile
