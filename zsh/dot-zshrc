@@ -3,7 +3,8 @@ fpath=($HOME/.zsh/completions $fpath)
 autoload -Uz compinit
 compinit
 
-source ~/.zsh/env.zsh
+export HELPDIR=/usr/share/zsh/"${ZSH_VERSION}"/help
+
 source ~/.zsh/aliases.zsh
 source ~/.zsh/functions.zsh
 

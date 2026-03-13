@@ -57,3 +57,20 @@ export HOTHOUSE_DIR="$HOME/repos/coding-sound/HothouseExamples"
 export LC_CTYPE=en_US.UTF-8
 export COPYFILE_DISABLE=true
 export BASH_SILENCE_DEPRECATION_WARNING=1
+
+# Pager / editor
+export PAGER="less -R"
+export LESS="-R"
+export EDITOR=emacsclient
+export ALTERNATE_EDITOR=vi
+
+# Python
+export PYTHONSTARTUP="$HOME/.pythonstartup.py"
+
+# PETSc / SLEPc
+export PETSC_DIR="$HOME/petsc"
+export PETSC_ARCH=arch-darwin-c-opt
+export SLEPC_DIR="$HOME/slepc"
+
+# workaround for python -c "import numpy; import torch"
+export KMP_DUPLICATE_LIB_OK=TRUE

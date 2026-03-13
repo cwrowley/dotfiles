@@ -9,20 +9,6 @@
   # }
 # fi
 
-export PAGER="less -R"
-export LESS="-R"
-export EDITOR=emacsclient
-export ALTERNATE_EDITOR=vi
-
-export PYTHONSTARTUP="$HOME/.pythonstartup.py"
-
-export PETSC_DIR="$HOME/petsc"
-export PETSC_ARCH=arch-darwin-c-opt
-export SLEPC_DIR="$HOME/slepc"
-
-# workaround for python -c "import numpy; import torch"
-export KMP_DUPLICATE_LIB_OK=TRUE
-
 
 if [ -r /usr/local/etc/bash_completion ]; then
     . /usr/local/etc/bash_completion
