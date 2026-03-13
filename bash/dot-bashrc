@@ -106,4 +106,4 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]] \
 	source "${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh"
 fi
 
-[ -r ~/.pyenv.sh ] && . ~/.pyenv.sh
+[ -r ~/.venv.sh ] && . ~/.venv.sh

@@ -1,6 +1,9 @@
 # Shared functions (get_keys, info, rsync helpers)
 [ -r ~/.functions ] && source ~/.functions
 
+# Python virtual environment tools (lsenv, mkenv, activate, rmenv)
+[ -r ~/.venv.sh ] && source ~/.venv.sh
+
 # Remove LaTeX build artifacts in the current directory
 # Usage: texclean [-n|--dry-run]
 texclean() {
