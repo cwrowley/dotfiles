@@ -1,0 +1,6 @@
+#compdef texclean
+
+_texclean() {
+  _arguments \
+    '(-n --dry-run)'{-n,--dry-run}'[print files that would be removed]'
+}

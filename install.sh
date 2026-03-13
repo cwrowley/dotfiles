@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dirs="bash conda emacs git python tex tmux zsh"
+dirs="bash conda emacs git python shared tex tmux zsh"
 
 pushd emacs/.emacs.d && make && popd
 [ ! -d ../.emacs.d ] && mkdir ../.emacs.d

@@ -70,25 +70,31 @@ PROMPT_COMMAND=__set_prompt
 export GIT_PS1_SHOWDIRTYSTATE=1
 export GIT_PS1_SHOWSTASHSTATE=1
 
-#eval `dircolors -b $HOME/.ls_colors`
-
 set -o noclobber
 
-# make bash check its window size afer a process completes
+# make bash check its window size after a process completes
 shopt -s checkwinsize
 
 [ -r ~/.aliases ] && . ~/.aliases
+[ -r ~/.functions ] && . ~/.functions
 
+# Remove LaTeX build artifacts in the current directory
+# Usage: texclean [-n|--dry-run]
 texclean() {
+    local dryrun=false
+    case "${1-}" in -n|--dry-run) dryrun=true ;; esac
     shopt -s nullglob
+    local f base ext
     for f in *.tex; do
-        base="${f%.*}"
-        rm -f -- \
-            "$base.aux" \
-            "$base.log" \
-            "$base.fdb_latexmk" \
-            "$base.fls" \
-            "$base.synctex.gz"
+        base="${f%.tex}"
+        for ext in aux log out fdb_latexmk fls synctex.gz toc bbl blg; do
+            [ -f "$base.$ext" ] || continue
+            if $dryrun; then
+                printf '%s\n' "$base.$ext"
+            else
+                rm -f -- "$base.$ext"
+            fi
+        done
     done
     shopt -u nullglob
 }
@@ -100,68 +106,4 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]] \
 	source "${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh"
 fi
 
-# load API keys
-get_keys () {
-    export GEMINI_API_KEY="$(security find-generic-password -a "clancyr@gmail.com" -s GEMINI_API_KEY -w)"
-    export AI_SANDBOX_KEY="$(security find-generic-password -a "cwrowley@princeton.edu" -s AI_SANDBOX_KEY -w)"
-}
-
-# functions to sync files with math server
-work_dir="Work/"
-ref_dir="Reference/"
-repo_dir="repos/"
-rsync_local="$HOME/"
-rsync_remote="math.princeton.edu:"
-do_rsync () {
-    rsync -rlptvuzhe ssh --exclude='.DS_Store' --exclude='__pycache__' --exclude="*venv" -- "$@"
-}
-rsync_pulldir () {
-    syncdir=$1
-    shift
-    echo "Pulling directory $syncdir from $rsync_remote"
-    do_rsync "$@" "${rsync_remote}${syncdir}" "${rsync_local}${syncdir}"
-    echo -e "\033[1;32mFinished pulling $syncdir $@ $(date)\033[0m"
-}
-rsync_pushdir () {
-    syncdir=$1
-    shift
-    echo "Pushing directory $syncdir to $rsync_remote"
-    do_rsync "$@" "${rsync_local}${syncdir}" "${rsync_remote}${syncdir}"
-    echo -e "\033[1;32mFinished pushing $syncdir $@ $(date)\033[0m"
-}
-pushwork () { rsync_pushdir $work_dir "$@"; }
-pullwork () { rsync_pulldir $work_dir "$@"; }
-pushref  () { rsync_pushdir $ref_dir "$@"; }
-pullref  () { rsync_pulldir $ref_dir "$@"; }
-pushrepos () { rsync_pushdir $repo_dir "$@"; }
-pullrepos () { rsync_pulldir $repo_dir "$@"; }
-# pushmath () { pushwork "$@"; pushref "$@"; }
-# pullmath () { pullwork "$@"; pullref "$@"; }
-pushmath () { pushrepos "$@"; }
-pullmath () { pullrepos "$@"; }
-
-# sync course files with H drive
-push433 () {
-    echo "Pushing directory mae433 to arizona"
-    do_rsync "$@" $HOME/mae433/ arizona.princeton.edu:mae433/
-}
-pull433 () {
-    echo "Pulling directory mae433 from arizona"
-    do_rsync "$@" arizona.princeton.edu:mae433/ $HOME/mae433/
-}
-
-# Python virtual environments
-if [ -r ~/.pyenv.sh ]; then
-    export VENV_HOME="$HOME/.pyenv"
-    source ~/.pyenv.sh
-fi
-
-# Use emacs for info
-info() {
-    if [[ -n "$1" ]]; then
-        emacsclient -e "(info \"$1\")" >/dev/null
-    else
-        emacsclient -e "(info)" >/dev/null
-    fi
-}
-
+[ -r ~/.pyenv.sh ] && . ~/.pyenv.sh

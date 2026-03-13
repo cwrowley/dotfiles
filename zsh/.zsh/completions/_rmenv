@@ -1,5 +1,7 @@
 #compdef rmenv
 
+source ~/.zsh/lib/venv.zsh
+
 _rmenv() {
   local -a globals
   _venv_globals_array

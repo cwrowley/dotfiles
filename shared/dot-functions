@@ -1,0 +1,61 @@
+# Shared shell functions (POSIX-compatible)
+# Sourced by both ~/.bashrc and ~/.zsh/functions.zsh
+
+# Load API keys from macOS keychain
+get_keys() {
+    export GEMINI_API_KEY="$(security find-generic-password -a "clancyr@gmail.com" -s GEMINI_API_KEY -w)"
+    export AI_SANDBOX_KEY="$(security find-generic-password -a "cwrowley@princeton.edu" -s AI_SANDBOX_KEY -w)"
+}
+
+# Use emacs for info
+info() {
+    if [ -n "${1-}" ]; then
+        emacsclient -e "(info \"$1\")" >/dev/null
+    else
+        emacsclient -e "(info)" >/dev/null
+    fi
+}
+
+# rsync helpers for Princeton servers
+_rsync_work_dir="Work/"
+_rsync_ref_dir="Reference/"
+_rsync_repo_dir="repos/"
+_rsync_local="$HOME/"
+_rsync_remote="math.princeton.edu:"
+
+_do_rsync() {
+    rsync -rlptvuzhe ssh --exclude='.DS_Store' --exclude='__pycache__' --exclude="*venv" -- "$@"
+}
+
+_rsync_pulldir() {
+    local syncdir="$1"; shift
+    printf 'Pulling directory %s from %s\n' "$syncdir" "$_rsync_remote"
+    _do_rsync "$@" "${_rsync_remote}${syncdir}" "${_rsync_local}${syncdir}"
+    printf '\033[1;32mFinished pulling %s %s %s\033[0m\n' "$syncdir" "$*" "$(date)"
+}
+
+_rsync_pushdir() {
+    local syncdir="$1"; shift
+    printf 'Pushing directory %s to %s\n' "$syncdir" "$_rsync_remote"
+    _do_rsync "$@" "${_rsync_local}${syncdir}" "${_rsync_remote}${syncdir}"
+    printf '\033[1;32mFinished pushing %s %s %s\033[0m\n' "$syncdir" "$*" "$(date)"
+}
+
+pushwork()  { _rsync_pushdir "$_rsync_work_dir" "$@"; }
+pullwork()  { _rsync_pulldir "$_rsync_work_dir" "$@"; }
+pushref()   { _rsync_pushdir "$_rsync_ref_dir"  "$@"; }
+pullref()   { _rsync_pulldir "$_rsync_ref_dir"  "$@"; }
+pushrepos() { _rsync_pushdir "$_rsync_repo_dir" "$@"; }
+pullrepos() { _rsync_pulldir "$_rsync_repo_dir" "$@"; }
+pushmath()  { pushrepos "$@"; }
+pullmath()  { pullrepos "$@"; }
+
+# Sync course files with arizona server
+push433() {
+    printf 'Pushing directory mae433 to arizona\n'
+    _do_rsync "$@" "$HOME/mae433/" arizona.princeton.edu:mae433/
+}
+pull433() {
+    printf 'Pulling directory mae433 from arizona\n'
+    _do_rsync "$@" arizona.princeton.edu:mae433/ "$HOME/mae433/"
+}
