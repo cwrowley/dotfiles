@@ -5,8 +5,8 @@ compinit
 
 export HELPDIR=/usr/share/zsh/"${ZSH_VERSION}"/help
 
-source ~/.zsh/aliases.zsh
-source ~/.zsh/functions.zsh
+[ -r ~/.aliases ] && source ~/.aliases
+[ -r ~/.zsh/functions.zsh ] && source ~/.zsh/functions.zsh
 
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
@@ -37,7 +37,7 @@ unalias run-help 2>/dev/null
 autoload -Uz run-help
 alias help=run-help
 
-source ~/.zsh/prompt.zsh
+[ -r ~/.zsh/prompt.zsh ] && source ~/.zsh/prompt.zsh
 
 set -o noclobber
 

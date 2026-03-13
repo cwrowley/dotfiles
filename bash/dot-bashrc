@@ -1,19 +1,45 @@
-# Show remote Terminal sessions with a different style.
-# TERM_PROGRAM doesn't get set if we are logged in remotely,
-# but then the originating Terminal could have done this (hopefully).
-# if [ "$TERM_PROGRAM" = "Apple_Terminal" ]; then
-  # function ssh {
-    # SetTerminalStyle ssh
-    # /usr/bin/ssh "$@"
-    # SetTerminalStyle novel
-  # }
-# fi
-
-
+# completions
 if [ -r /usr/local/etc/bash_completion ]; then
     . /usr/local/etc/bash_completion
 elif [ -r /opt/homebrew/etc/bash_completion ]; then
     . /opt/homebrew/etc/bash_completion
+fi
+
+set -o noclobber
+
+# make bash check its window size after a process completes
+shopt -s checkwinsize
+
+[ -r ~/.aliases ] && . ~/.aliases
+[ -r ~/.functions ] && . ~/.functions
+[ -r ~/.venv.sh ] && . ~/.venv.sh
+
+# Remove LaTeX build artifacts in the current directory
+# Usage: texclean [-n|--dry-run]
+texclean() {
+    local dryrun=false
+    case "${1-}" in -n|--dry-run) dryrun=true ;; esac
+    shopt -s nullglob
+    local f base ext
+    for f in *.tex; do
+        base="${f%.tex}"
+        for ext in aux log out fdb_latexmk fls synctex.gz toc bbl blg; do
+            [ -f "$base.$ext" ] || continue
+            if $dryrun; then
+                printf '%s\n' "$base.$ext"
+            else
+                rm -f -- "$base.$ext"
+            fi
+        done
+    done
+    shopt -u nullglob
+}
+
+# if inside Emacs, configure shell for vterm
+if [[ "$INSIDE_EMACS" = 'vterm' ]] \
+    && [[ -n ${EMACS_VTERM_PATH} ]] \
+    && [[ -f ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh ]]; then
+	source "${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh"
 fi
 
 ### set prompt
@@ -55,41 +81,3 @@ __set_prompt() {
 PROMPT_COMMAND=__set_prompt
 export GIT_PS1_SHOWDIRTYSTATE=1
 export GIT_PS1_SHOWSTASHSTATE=1
-
-set -o noclobber
-
-# make bash check its window size after a process completes
-shopt -s checkwinsize
-
-[ -r ~/.aliases ] && . ~/.aliases
-[ -r ~/.functions ] && . ~/.functions
-
-# Remove LaTeX build artifacts in the current directory
-# Usage: texclean [-n|--dry-run]
-texclean() {
-    local dryrun=false
-    case "${1-}" in -n|--dry-run) dryrun=true ;; esac
-    shopt -s nullglob
-    local f base ext
-    for f in *.tex; do
-        base="${f%.tex}"
-        for ext in aux log out fdb_latexmk fls synctex.gz toc bbl blg; do
-            [ -f "$base.$ext" ] || continue
-            if $dryrun; then
-                printf '%s\n' "$base.$ext"
-            else
-                rm -f -- "$base.$ext"
-            fi
-        done
-    done
-    shopt -u nullglob
-}
-
-# if inside Emacs, configure shell for vterm
-if [[ "$INSIDE_EMACS" = 'vterm' ]] \
-    && [[ -n ${EMACS_VTERM_PATH} ]] \
-    && [[ -f ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh ]]; then
-	source "${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh"
-fi
-
-[ -r ~/.venv.sh ] && . ~/.venv.sh
