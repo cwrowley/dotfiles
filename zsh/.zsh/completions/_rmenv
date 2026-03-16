@@ -3,6 +3,7 @@
 _rmenv() {
   local -a globals
   : "${VENV_HOME:=$HOME/.pyenv}"
+  # Match only directories (/) and strip the path, leaving just the tail/basename (:t)
   globals=( "$VENV_HOME"/*(/N:t) )
 
   _arguments -C \

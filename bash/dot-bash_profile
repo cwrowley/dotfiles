@@ -8,7 +8,7 @@ if [[ $- == *i* ]] && [ -r "$HOME/.bashrc" ]; then
     . "$HOME/.bashrc"
 fi
 
-# iTerm2 shell integration
-if [ -r "$HOME/.iterm2_shell_integration.bash" ]; then
+# iTerm2 shell integration (interactive only)
+if [[ $- == *i* ]] && [ -r "$HOME/.iterm2_shell_integration.bash" ]; then
     . "$HOME/.iterm2_shell_integration.bash"
 fi

@@ -5,8 +5,14 @@ compinit
 
 export HELPDIR=/usr/share/zsh/"${ZSH_VERSION}"/help
 
+# Aliases
 [ -r ~/.aliases ] && source ~/.aliases
+
+# Functions (e.g., get_keys, info, texclean, rsync helpers)
 [ -r ~/.zsh/functions.zsh ] && source ~/.zsh/functions.zsh
+
+# Python virtual environment tools (lsenv, mkenv, activate, rmenv)
+[ -r ~/.venv.sh ] && source ~/.venv.sh
 
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
