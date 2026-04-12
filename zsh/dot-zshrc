@@ -63,4 +63,4 @@ fi
 [ -r ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # API keys
-[ -r ~/.zshrc.local ] && source ~/.zshrc.local
+[ -r ~/.zshrc.local ] && source ~/.zshrc.local || :
