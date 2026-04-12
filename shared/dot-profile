@@ -36,7 +36,14 @@ done
 export PATH
 
 # MANPATH
-for _d in "/opt/local/man" "/usr/local/man" "/usr/local/mysql/man" "$HOME/man"; do
+for _d in \
+    "/usr/share/man" \
+    "/opt/local/man" \
+    "/usr/local/man" \
+    "/usr/local/mysql/man" \
+    "/opt/homebrew/share/man" \
+    "$HOME/man"
+do
     _prepend_manpath "$_d"
 done
 export MANPATH

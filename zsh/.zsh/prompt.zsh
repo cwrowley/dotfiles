@@ -3,8 +3,7 @@ autoload -U colors && colors
 setopt prompt_subst
 
 # left prompt
-STATUS_FACE='%(?.:).:()'
-PROMPT='%B%F{cyan}%m%f%b %B%F{magenta}%1~%f%b %F{yellow}${STATUS_FACE}%f %F{red}%#%f '
+PROMPT='%B%F{cyan}%m%f%b %B%F{magenta}%1~%f%b %(?:%F{green}✓%f:%F{yellow}✗%f) '
 
 # right prompt (git branch)
 autoload -Uz vcs_info

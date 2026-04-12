@@ -1,5 +1,9 @@
-alias t='less'
-alias ls='gls -CF --color=auto'
+alias t='bat'
+# alias ls='gls -CF --color=auto'
+alias ls=eza
+alias ll='eza -l --git'
+alias la='eza -a'
+alias lla='eza -al --git'
 alias lo='logout'
 alias h='history 23'
 alias del='rm -i --'
@@ -34,11 +38,33 @@ tw() {
 
 emacsd() {
   local sock="${TMPDIR%/}/emacs$(id -u)/server"
-  if [[ ! -S "$sock" ]]; then
-    emacs --daemon
-  else
-    echo "Emacs daemon already running (socket: $sock)"
-  fi
+  local cmd="${1:-start}"
+  case "$cmd" in
+    start)
+      if [[ ! -S "$sock" ]]; then
+        emacs --daemon
+      else
+        echo "Emacs daemon already running (socket: $sock)"
+      fi
+      ;;
+    kill|stop)
+      if [[ -S "$sock" ]]; then
+        emacsclient -e "(kill-emacs)"
+      else
+        echo "No Emacs daemon running (socket: $sock)"
+      fi
+      ;;
+    restart)
+      if [[ -S "$sock" ]]; then
+        emacsclient -e "(kill-emacs)"
+      fi
+      emacs --daemon
+      ;;
+    *)
+      echo "Usage: emacsd [start|kill|restart]" >&2
+      return 1
+      ;;
+  esac
 }
 
 lumiere() {

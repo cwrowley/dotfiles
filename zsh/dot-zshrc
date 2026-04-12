@@ -54,4 +54,13 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]] \
 	source "${EMACS_VTERM_PATH}/etc/emacs-vterm-zsh.sh"
 fi
 
+# If zoxide is available, activate it and alias cd
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+  alias cd=z
+fi
 
+[ -r ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# API keys
+[ -r ~/.zshrc.local ] && source ~/.zshrc.local

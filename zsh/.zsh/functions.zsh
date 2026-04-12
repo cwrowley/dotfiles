@@ -14,7 +14,7 @@ texclean() {
     local base=( *.tex(N:r) )
     (( ${#base} )) || return 0
 
-    local ext=( aux log out fdb_latexmk fls synctex.gz toc bbl blg )
+    local ext=( aux log out fdb_latexmk fls synctex.gz toc bbl blg bcf run.xml )
     local junk=( ${^base}.${^ext}(N) )
 
     if (( dryrun )); then
