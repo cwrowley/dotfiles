@@ -81,3 +81,7 @@ export SLEPC_DIR="$HOME/slepc"
 
 # workaround for python -c "import numpy; import torch"
 export KMP_DUPLICATE_LIB_OK=TRUE
+
+# Added by OrbStack: command-line tools and integration
+# This won't be added again if you remove it.
+[ -r ~/.orbstack/shell/init.zsh ] && ~/.orbstack/shell/init.zsh 2>/dev/null
