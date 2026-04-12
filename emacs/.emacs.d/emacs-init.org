@@ -952,9 +952,15 @@ Language server protocol (LSP) client
 #+begin_src emacs-lisp
 (use-package organ
   :ensure t
-  :vc (:url "git@github.com:cwrowley/organ-emacs.git" :branch "main")
+  :vc (:url "git@github.com:cwrowley/organ.git"
+       :branch "main"
+       :lisp-dir "organ-emacs"
+       :rev :newest)
   :config
-  (global-set-key (kbd "C-c o") 'organ-menu))
+  (global-set-key (kbd "C-c o") 'organ-menu)
+  (when-let* ((entry (car (auth-source-search :host "organ-gigs" :require '(:secret))))
+              (key (funcall (plist-get entry :secret))))
+    (setq organ-api-key key)))
 #+end_src
 ** RSS reader
 *** Elfeed
@@ -1074,7 +1080,9 @@ Recursive grep in a directory
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
   ;; do not fontify subscripts and superscripts
-  (setq font-latex-fontify-script nil))
+  (setq font-latex-fontify-script nil)
+  ;; Use biber instead of BibTeX
+  (setq TeX-command-BibTeX "biber"))
 
 (use-package latex
   :ensure auctex
@@ -1103,7 +1111,17 @@ Recursive grep in a directory
 	  ("\\theoremname{*}" "idx" ?t "" nil nil)
 	  index))
   (setq reftex-index-default-macro '(?i ""))
-  (setq reftex-index-default-tag nil))
+  (setq reftex-index-default-tag nil)
+  (defun my/jump-to-bib-file ()
+    "Jump to a bib file used in the current LaTeX document."
+    (interactive)
+    (let* ((master (reftex-TeX-master-file))
+           (files (reftex-get-bibfile-list))
+           (file (if (= (length files) 1)
+                     (car files)
+                   (completing-read "Bib file: " files nil t))))
+      (find-file file)))
+  (define-key reftex-mode-map (kbd "C-c b") #'my/jump-to-bib-file))
 #+end_src
 
 *** CDLaTeX
